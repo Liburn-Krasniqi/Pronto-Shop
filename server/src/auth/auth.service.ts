@@ -68,7 +68,7 @@ export class AuthService{
             );
         }
         
-        //this shouldnt return hash but idk how to do that rn
+        //this shouldnt return hash but idk how to do that right now
         //send back the user
         return user
     }
