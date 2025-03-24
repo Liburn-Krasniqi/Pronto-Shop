@@ -1,47 +1,37 @@
-.header {
-    width: 100%;
-    height: 5rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #006fba;
-    padding: 0 10%;
-  }
+.navbar{
+  background: #81B214;
+  /* background: linear-gradient(90deg, rgba(255,115,0,1) 35%, rgba(255,140,0,1) 100%); */
   
-  .logo {
-    font-size: 2rem;
-    color: white;
-    font-weight: bold;
-  }
-  
-  .header ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    align-items: baseline;
-  }
-  
-  .header li {
-    margin-left: 3rem;
-  }
-  
-  .header a {
-    text-decoration: none;
-    font-size: 1.5rem;
-    color: #fcb8d2;
-  }
-  
-  .header a:hover,
-  .header a:active,
-  .header a.active {
-    color: white;
-  }
-  
-  .badge {
-    background-color: #cc2062;
-    color: white;
-    border-radius: 12px;
-    padding: 0 1rem;
-    margin-left: 0.5rem;
-  }
+  /* hardcoded height for now */
+  height: 66px;
+
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 25%);
+}
+
+.search {
+  height: 50px;
+  font-size: 32px;
+  font-weight: 270;
+  color:#8C8C8C;
+  box-shadow: inset 0px 4px 4px 0px rgba(0, 0, 0, 25%);
+  border: none;
+}
+
+.collapse{
+  background-color: #206A5D;
+  width: 100%;
+}
+
+.delivery {
+  font-size: small;
+}
+
+:global(.dropdown-toggle::after) {
+  color: white;
+}
+
+/* nashta duhet me hjek edhe me zhvendos qet klas -Libi*/
+.navLinkNoUnderline {
+  text-decoration: none !important;
+  color: #81B214;
+}
