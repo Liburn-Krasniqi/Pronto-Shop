@@ -1,42 +1,43 @@
 import { ForbiddenException, Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { AuthDto } from "./dto";
+import { UserDto } from "../user/dto";
 import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { User, UserDocument } from '../user/user.schema';
 
 @Injectable()
 export class AuthService{
-    constructor(private prisma: PrismaService){}
+    constructor(
+        private prisma: PrismaService,
+        @InjectModel(User.name) private userModel: Model<UserDocument>
+    ){}
 
-    async signup(dto: AuthDto){
+    async signup(dto: UserDto) {
         const hash = await argon.hash(dto.password);
-        
-        try{
-            const user = await this.prisma.user.create({
-                data: {
-                    email: dto.email,
-                    hash,
-                },
-                select: {
-                    id: true,
-                    email: true,
-                    createdAt: true,
-                    updatedAt: true,
-                    firstName: true,
-                    lastName: true,
-                }
-            })
-
-            return user;
-        }catch(error){
-            if (error instanceof PrismaClientKnownRequestError){
-                if (error.code === 'P2002'){
-                    throw new ForbiddenException(
-                        'Credentials taken',
-                    );
-                }
-            }
-            throw error;
+    
+        try {
+          const user = await this.userModel.create({
+            email: dto.email,
+            hash,
+            firstName: dto.firstName,
+            lastName: dto.lastName,
+          });
+    
+          return {
+            id: user._id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+          };
+    
+        } catch (error) {
+          if (error.code === 11000) {
+            throw new ForbiddenException('Credentials taken');
+          }
+          throw error;
         }
     }
 
