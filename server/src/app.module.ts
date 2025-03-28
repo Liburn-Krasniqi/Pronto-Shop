@@ -12,7 +12,7 @@ import { BookmarkModule } from './bookmark/bookmark.module';
       isGlobal: true,
     }),
     PrismaModule, 
-    MongooseModule.forRoot('mongodb://localhost:27017/nest'),
+    MongooseModule.forRoot('mongodb://mongo:1234@localhost:27017/pronto-shop?authSource=admin'),
     AuthModule,
     UserModule, 
     BookmarkModule,

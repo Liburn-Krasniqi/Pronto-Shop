@@ -1,7 +1,6 @@
 import { ForbiddenException, Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { AuthDto } from "./dto";
-import { UserDto } from "../user/dto";
 import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { InjectModel } from '@nestjs/mongoose';
@@ -15,15 +14,20 @@ export class AuthService{
         @InjectModel(User.name) private userModel: Model<UserDocument>
     ){}
 
-    async signup(dto: UserDto) {
+    async signup(dto: AuthDto) {
         const hash = await argon.hash(dto.password);
     
         try {
           const user = await this.userModel.create({
             email: dto.email,
-            hash,
+            password: hash,
             firstName: dto.firstName,
             lastName: dto.lastName,
+            address: {
+                street: dto.address.street,
+                city: dto.address.city,
+                ...(dto.address.country && { country: dto.address.country })
+            }
           });
     
           return {
@@ -31,6 +35,7 @@ export class AuthService{
             email: user.email,
             firstName: user.firstName,
             lastName: user.lastName,
+            address: user.address
           };
     
         } catch (error) {
@@ -41,36 +46,36 @@ export class AuthService{
         }
     }
 
-    async signin(dto: AuthDto){
-        // find user by email
-        const user = await this.prisma.user.findUnique({
-            where: {
-                email: dto.email,
-            },
-        });
+    // async signin(dto: AuthDto){
+    //     // find user by email
+    //     const user = await this.prisma.user.findUnique({
+    //         where: {
+    //             email: dto.email,
+    //         },
+    //     });
 
-        // if user does not exist throw exception
-        if (!user){
-            throw new ForbiddenException(
-                'Credentials incorrect',
-            );
-        }
+    //     // if user does not exist throw exception
+    //     if (!user){
+    //         throw new ForbiddenException(
+    //             'Credentials incorrect',
+    //         );
+    //     }
 
-        //compare password
-        const pwMatches = await argon.verify(
-            user.hash,
-            dto.password,
-        );
+    //     //compare password
+    //     const pwMatches = await argon.verify(
+    //         user.hash,
+    //         dto.password,
+    //     );
 
-        //if password incorrect throw exception
-        if (!pwMatches){
-            throw new ForbiddenException(
-                'Credentials Incorrect'
-            );
-        }
+    //     //if password incorrect throw exception
+    //     if (!pwMatches){
+    //         throw new ForbiddenException(
+    //             'Credentials Incorrect'
+    //         );
+    //     }
         
-        //this shouldnt return hash but idk how to do that right now
-        //send back the user
-        return user
-    }
+    //     //this shouldnt return hash but idk how to do that right now
+    //     //send back the user
+    //     return user
+    // }
 }

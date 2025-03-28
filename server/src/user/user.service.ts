@@ -5,7 +5,7 @@ import { User, UserDocument } from './user.schema';
 import { UserDto } from "./dto";
 
 @Injectable()
-export class UsersService {
+export class UserService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>
   ) {}
