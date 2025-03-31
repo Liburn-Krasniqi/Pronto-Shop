@@ -3,10 +3,9 @@ import Form from "react-bootstrap/Form";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import classes from "./MainNavigation.module.css";
-import CustomNavDropdown from "../custom/CustomNavDropdown";
-import NavItemWithIcon from "../custom/NavItemWithIcon";
+import { NavItemWithIcon, CustomNavDropdown } from "../../UI";
 
-const MainNavigation: React.FC = () => {
+export const MainNavigation: React.FC = () => {
   return (
     <Navbar expand="lg" className={`rounded-bottom-4 ${classes.navbar}`}>
       <Container fluid>
@@ -51,8 +50,8 @@ const MainNavigation: React.FC = () => {
                   </span>
                 }
                 items={[
-                  { to: "/Bookmarks", label: "Bookmarks" },
-                  { to: "/", label: "Users (temporarily here)" },
+                  { to: "/", label: "Bookmarks" },
+                  { to: "/Users", label: "Users (temporarily here)" },
                   { to: "/", label: "Sign In" },
                 ]}
                 className="me-4 text-white"
@@ -83,5 +82,3 @@ const MainNavigation: React.FC = () => {
     </Navbar>
   );
 };
-
-export default MainNavigation;

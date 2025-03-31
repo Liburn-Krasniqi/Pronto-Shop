@@ -1,7 +1,8 @@
 .navbar{
   background: #81B214;
-  /* background: linear-gradient(90deg, rgba(255,115,0,1) 35%, rgba(255,140,0,1) 100%); */
-  
+  position: relative;
+  z-index: 1000; /* much needed so that stuff doesnt appear in the back */
+
   /* hardcoded height for now */
   height: 66px;
 
@@ -35,3 +36,4 @@
   text-decoration: none !important;
   color: #81B214;
 }
+

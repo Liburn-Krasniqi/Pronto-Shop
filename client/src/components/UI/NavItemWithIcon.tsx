@@ -4,7 +4,7 @@ interface NavItemWithIconProps {
   className?: string;
 }
 
-const NavItemWithIcon: React.FC<NavItemWithIconProps> = ({
+export const NavItemWithIcon: React.FC<NavItemWithIconProps> = ({
   iconSrc,
   text,
   className,
@@ -16,5 +16,3 @@ const NavItemWithIcon: React.FC<NavItemWithIconProps> = ({
     </div>
   );
 };
-
-export default NavItemWithIcon;
