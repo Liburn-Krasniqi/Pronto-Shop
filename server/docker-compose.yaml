@@ -1,5 +1,5 @@
 services:
-  dev-db:
+  postgres:
     image: postgres:13
     ports:
       - 5434:5432
@@ -9,5 +9,25 @@ services:
       POSTGRES_DB: nest
     networks:
       - lab2
+
+  mongodb:
+    image: mongo:latest  
+    container_name: mongodb
+    hostname: mongodb
+    ports:
+      - "27017:27017"  
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongo  
+      MONGO_INITDB_ROOT_PASSWORD: 1234  
+    volumes:
+      - mongodb_data:/data/db  
+    networks:
+      - lab2 
+
+  
+
+volumes:
+  mongodb_data:
+
 networks:
   lab2:

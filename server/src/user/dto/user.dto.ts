@@ -1,14 +1,14 @@
+import { IsEmail, IsNotEmpty, IsString, MinLength, IsObject, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-import { IsEmail, IsNotEmpty, IsObject, IsString, ValidateNested } from 'class-validator';
-import { AddressDto } from 'src/user/dto/address.dto';
+import { AddressDto } from './address.dto';
 
-export class AuthDto{
+export class UserDto{
     @IsEmail()
     @IsNotEmpty()
     email: string;
 
     @IsString()
-    @IsNotEmpty()
+    @MinLength(8)
     password: string;
 
     @IsString()
