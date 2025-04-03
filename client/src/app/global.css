@@ -1,0 +1,36 @@
+body {
+    background-color: #F1F1E8;
+}
+
+/* Color schema/palette */
+.background-1 {
+  background-color: #206A5D;
+}
+  
+.background-2 {
+  background-color: #81B214;
+}
+  
+.background-3 {
+  background-color: #BFDCAE;
+}
+  
+.background-4 {
+  background-color: #F1F1E8;
+}
+
+.color-1 {
+  color: #206A5D;
+}
+
+.color-2 {
+ color: #81B214;
+}
+
+.color-3 {
+ color: #BFDCAE;
+}
+
+.color-4 {
+ color: #F1F1E8;
+}
