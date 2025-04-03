@@ -42,3 +42,19 @@ model Bookmark {
 
   @@map("bookmarks")
 }
+
+
+model Vendor{
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String
+  email String @unique
+  hash String
+  phone_number String
+
+  // products Product[]
+
+  @@map("vendors")
+}
