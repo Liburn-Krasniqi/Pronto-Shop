@@ -5,17 +5,21 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { BookmarkModule } from './bookmark/bookmark.module';
+import { LogsModule } from './log/logs.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    PrismaModule, 
-    MongooseModule.forRoot('mongodb://mongo:1234@localhost:27017/pronto-shop?authSource=admin'),
+    PrismaModule,
+    MongooseModule.forRoot(
+      'mongodb://mongo:1234@localhost:27017/pronto-shop?authSource=admin',
+    ),
     AuthModule,
-    UserModule, 
+    UserModule,
     BookmarkModule,
+    LogsModule,
   ],
 })
 export class AppModule {}
