@@ -4,6 +4,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { BookmarkModule } from './bookmark/bookmark.module';
+import { LogsModule } from './log/logs.module';
 import { MongoModule } from './mongo';
 
 @Module({
@@ -16,6 +17,7 @@ import { MongoModule } from './mongo';
     AuthModule,
     UserModule,
     BookmarkModule,
+    LogsModule,
   ],
 })
 export class AppModule {}
