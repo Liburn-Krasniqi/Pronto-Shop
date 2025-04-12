@@ -13,6 +13,77 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  email String @unique
+  hash String
+  firstName String
+  lastName String
+  role String
+
+  
+
+
+
+  bookmarks Bookmark[]
+  paymentCards PaymentCard[]
+  phoneNumbers PhoneNumber[]
+  adresses Address[]
+
+  @@map("users")
+}
+
+model PhoneNumber{
+  id Int @id @default(autoincrement())
+
+  userId Int
+  countryCode String?
+  phoneNumer String?
+  // @@id([userId])
+  @@map("phoneNumers")
+  user User @relation(fields: [userId], references: [id])
+  
+}
+model PaymentCard{//This is mostly placeholder since payments aren't added yet and the table needs stripe info
+  id Int @id @default(autoincrement())
+  userId Int
+  createdAt DateTime @default(now())
+  cardHolderNamea String?
+  last4 Int?
+  brand String?
+  expMonth String?
+  expYear String?
+  isDefault String?
+  
+
+
+
+  // @@id([userId])
+  @@map("paymentCards")
+  user User @relation(fields: [userId], references: [id])
+  
+}
+
+model Address{
+  id Int @id @default(autoincrement())
+
+  userId Int
+  
+
+  street String?
+  city String?
+  state String?
+  postalCode String?
+  country String?
+  
+  // @@id([userId])
+  user User @relation(fields: [userId], references: [id])
+  @@map("addresses")
+}
+
 model Bookmark {
   id Int @id @default(autoincrement())
   createdAt DateTime @default(now())
@@ -24,5 +95,6 @@ model Bookmark {
 
   userId Int
 
+  user User @relation(fields: [userId], references: [id])
   @@map("bookmarks")
 }
