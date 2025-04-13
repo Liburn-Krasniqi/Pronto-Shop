@@ -1,7 +1,7 @@
 export function Users() {
   return (
     <div>
-      <h1>Users Page</h1>
+      <h1 className="background-2">Users Page</h1>
     </div>
   );
 }
