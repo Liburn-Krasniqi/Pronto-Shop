@@ -1,7 +1,6 @@
 import NavDropdown from "react-bootstrap/NavDropdown";
 import { NavLink } from "react-router-dom";
-import classes from "../layout/MainNavigation/MainNavigation.module.css";
-//duhet me e bo nryshe qet punen e qiti css importi, amo pe lo qishtu niher -Libi
+import classes from "./CustomNavDropdown.module.css";
 
 interface CustomNavDropdownProps {
   title: React.ReactNode;

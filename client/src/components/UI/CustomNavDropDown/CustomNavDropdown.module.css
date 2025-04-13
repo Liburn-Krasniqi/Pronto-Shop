@@ -1,0 +1,8 @@
+:global(.dropdown-toggle::after) {
+    color: white;
+}
+  
+.navLinkNoUnderline {
+    text-decoration: none !important;
+    color: #81B214;
+}

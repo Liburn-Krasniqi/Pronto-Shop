@@ -1,39 +1,11 @@
 .navbar{
-  background: #81B214;
-  position: relative;
-  z-index: 1000; /* much needed so that stuff doesnt appear in the back */
+    max-height: 100px;
+    height: 66px;
 
-  /* hardcoded height for now */
-  height: 66px;
+    position: relative;
+    z-index: 1000; /* much needed so that stuff doesnt appear in the back */
 
-  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 25%);
+    background: #81B214;
+
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 25%);
 }
-
-.search {
-  height: 50px;
-  font-size: 32px;
-  font-weight: 270;
-  color:#8C8C8C;
-  box-shadow: inset 0px 4px 4px 0px rgba(0, 0, 0, 25%);
-  border: none;
-}
-
-.collapse{
-  background-color: #206A5D;
-  width: 100%;
-}
-
-.delivery {
-  font-size: small;
-}
-
-:global(.dropdown-toggle::after) {
-  color: white;
-}
-
-/* nashta duhet me hjek edhe me zhvendos qet klas -Libi*/
-.navLinkNoUnderline {
-  text-decoration: none !important;
-  color: #81B214;
-}
-
