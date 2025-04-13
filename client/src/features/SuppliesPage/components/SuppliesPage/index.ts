@@ -1,0 +1,1 @@
+export { SuppliesPage } from "./SuppliesPage";

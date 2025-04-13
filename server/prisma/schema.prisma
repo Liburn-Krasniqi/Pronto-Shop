@@ -14,15 +14,209 @@ datasource db {
 }
 
 model Bookmark {
-  id Int @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  title String
+  title       String
   description String?
-  link String
+  link        String
 
   userId Int
 
   @@map("bookmarks")
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  name        String
+  description String
+  price       Float
+  images      String[]
+  featured    Boolean     @default(false)
+  stock       Int         @default(0)
+  category    Category?   @relation(fields: [categoryId], references: [id])
+  categoryId  String?
+  orderItems  OrderItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model User {
+  id         String    @id @default(cuid())
+  email      String    @unique
+  name       String?
+  password   String? // Optional for guest checkout
+  role       Role      @default(USER)
+  orders     Order[]
+  addresses  Address[]
+  isGuest    Boolean   @default(false)
+  newsletter Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  CREDIT_CARD
+  PAYPAL
+  PAY_ON_DELIVERY
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum ShippingMethod {
+  STANDARD
+  EXPRESS
+  NEXT_DAY
+}
+
+model Address {
+  id            String      @id @default(cuid())
+  firstName     String
+  lastName      String
+  company       String?
+  address1      String
+  address2      String?
+  city          String
+  state         String
+  zip           String
+  country       String
+  phone         String
+  isDefault     Boolean     @default(false)
+  type          AddressType
+  user          User        @relation(fields: [userId], references: [id])
+  userId        String
+  orders        Order[]     @relation("ShippingAddress")
+  billingOrders Order[]     @relation("BillingAddress")
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+enum AddressType {
+  SHIPPING
+  BILLING
+  BOTH
+}
+
+model Order {
+  id                String         @id @default(cuid())
+  orderNumber       String         @unique
+  status            OrderStatus    @default(PENDING)
+  user              User           @relation(fields: [userId], references: [id])
+  userId            String
+  items             OrderItem[]
+  shippingAddress   Address        @relation("ShippingAddress", fields: [shippingAddressId], references: [id])
+  shippingAddressId String
+  billingAddress    Address        @relation("BillingAddress", fields: [billingAddressId], references: [id])
+  billingAddressId  String
+  shippingMethod    ShippingMethod
+  shippingCost      Float
+  subtotal          Float
+  tax               Float
+  total             Float
+  payment           Payment?
+  promoCode         PromoCode?     @relation(fields: [promoCodeId], references: [id])
+  promoCodeId       String?
+  notes             String?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  Delivery          Delivery?
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  quantity  Int
+  price     Float
+  order     Order    @relation(fields: [orderId], references: [id])
+  orderId   String
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  order         Order         @relation(fields: [orderId], references: [id])
+  orderId       String        @unique
+  method        PaymentMethod
+  status        PaymentStatus @default(PENDING)
+  amount        Float
+  currency      String        @default("USD")
+  cardLastFour  String?
+  cardBrand     String?
+  paypalEmail   String?
+  transactionId String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model PromoCode {
+  id         String   @id @default(cuid())
+  code       String   @unique
+  discount   Float
+  isPercent  Boolean  @default(true)
+  validFrom  DateTime
+  validUntil DateTime
+  maxUses    Int?
+  usedCount  Int      @default(0)
+  orders     Order[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Delivery {
+  id         String   @id @default(cuid())
+  firstName  String
+  lastName   String
+  email      String
+  phone      String
+  address    String
+  city       String
+  postalCode String
+  country    String
+  order      Order    @relation(fields: [orderId], references: [id])
+  orderId    String   @unique
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model BlogPost {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  slug      String   @unique
+  author    String
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

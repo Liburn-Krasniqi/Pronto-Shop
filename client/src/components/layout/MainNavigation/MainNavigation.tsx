@@ -4,12 +4,52 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import classes from "./MainNavigation.module.css";
 import { NavItemWithIcon, CustomNavDropdown } from "../../UI";
+import { Cart } from "../../../features/Cart";
+import { LoginRegister } from "../../../features/LoginRegister";
+import { useState, useEffect } from "react";
+import Offcanvas from "react-bootstrap/Offcanvas";
+import { cartService } from "../../../services/CartService";
 
 export const MainNavigation: React.FC = () => {
+  const [showCart, setShowCart] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
+  const [cartItemCount, setCartItemCount] = useState(0);
+
+  useEffect(() => {
+    // Initial cart count
+    updateCartCount();
+
+    // Listen for storage changes
+    window.addEventListener('storage', updateCartCount);
+    
+    // Custom event listener for cart updates
+    window.addEventListener('cartUpdated', updateCartCount);
+
+    return () => {
+      window.removeEventListener('storage', updateCartCount);
+      window.removeEventListener('cartUpdated', updateCartCount);
+    };
+  }, []);
+
+  const updateCartCount = () => {
+    const cart = cartService.getCart();
+    const count = cart.reduce((total, item) => total + item.quantity, 0);
+    setCartItemCount(count);
+  };
+
+  const handleCartClose = () => setShowCart(false);
+  const handleCartShow = () => {
+    updateCartCount(); // Update count when opening cart
+    setShowCart(true);
+  };
+  
+  const handleAuthClose = () => setShowAuth(false);
+  const handleAuthShow = () => setShowAuth(true);
+
   return (
     <Navbar expand="lg" className={`rounded-bottom-4 ${classes.navbar}`}>
       <Container fluid>
-        <Navbar.Brand className="ms-3" href="#">
+        <Navbar.Brand className="ms-3" href="/">
           <img alt="Pronto Logo" src="/letter-p.svg" />
         </Navbar.Brand>
 
@@ -42,20 +82,16 @@ export const MainNavigation: React.FC = () => {
             </Nav.Link>
 
             <div className="d-flex justify-content-end position-absolute top-50 end-0 translate-middle-y">
-              <CustomNavDropdown
-                title={
-                  <span className="text-white">
-                    Hello, sign in <br />
-                    <strong>Accounts & Lists</strong>
-                  </span>
-                }
-                items={[
-                  { to: "/", label: "Bookmarks" },
-                  { to: "/Users", label: "Users (temporarily here)" },
-                  { to: "/", label: "Sign In" },
-                ]}
+              <Nav.Link
+                onClick={handleAuthShow}
                 className="me-4 text-white"
-              />
+                style={{cursor: 'pointer'}}
+              >
+                <span>
+                  Hello, sign in <br />
+                  <strong>Accounts & Lists</strong>
+                </span>
+              </Nav.Link>
 
               <CustomNavDropdown
                 title={
@@ -72,13 +108,41 @@ export const MainNavigation: React.FC = () => {
                 className="me-4 text-white"
               />
 
-              <Nav.Link href="#action1" className="me-2">
+              <Nav.Link 
+                onClick={handleCartShow}
+                className="me-2 position-relative"
+                style={{cursor: 'pointer'}}
+              >
                 <img alt="cart" src="/Shopping-cart.svg" className="me-2" />
+                {cartItemCount > 0 && (
+                  <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    {cartItemCount}
+                    <span className="visually-hidden">items in cart</span>
+                  </span>
+                )}
               </Nav.Link>
             </div>
           </Nav>
         </Navbar.Collapse>
       </Container>
+
+      <Offcanvas show={showCart} onHide={handleCartClose} placement="end">
+        <Offcanvas.Header closeButton>
+          <Offcanvas.Title>Your Shopping Cart ({cartItemCount} items)</Offcanvas.Title>
+        </Offcanvas.Header>
+        <Offcanvas.Body>
+          <Cart />
+        </Offcanvas.Body>
+      </Offcanvas>
+
+      <Offcanvas show={showAuth} onHide={handleAuthClose} placement="end">
+        <Offcanvas.Header closeButton>
+          <Offcanvas.Title>Sign In or Register</Offcanvas.Title>
+        </Offcanvas.Header>
+        <Offcanvas.Body>
+          <LoginRegister />
+        </Offcanvas.Body>
+      </Offcanvas>
     </Navbar>
   );
 };

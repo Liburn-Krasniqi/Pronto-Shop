@@ -6,7 +6,7 @@ import { AppRouter } from "./router";
 import { AppRoutes } from "./routes";
 
 createRoot(document.getElementById("root")!).render(
-  <AppProvider>
+  <AppProvider>ß
     <AppRouter>
       <AppRoutes />
     </AppRouter>
