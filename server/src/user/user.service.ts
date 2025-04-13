@@ -1,17 +1,26 @@
-// import { Injectable } from '@nestjs/common';
-// import { InjectModel } from '@nestjs/mongoose';
-// import { Model } from 'mongoose';
-// import { User, UserDocument } from './user.schema';
-// import { UserDto } from "./dto";
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "src/prisma/prisma.service";
+import { UpdateUserDto } from "./dto/updateUser.dto";
 
-// @Injectable()
-// export class UserService {
-//   constructor(
-//     @InjectModel(User.name) private userModel: Model<UserDocument>
-//   ) {}
 
-//   async createUser(userDto: UserDto): Promise<UserDocument> {
-//     const createdUser = new this.userModel(userDto);
-//     return createdUser.save();
-//   }
-// }
+
+@Injectable()
+export class UserService{
+    constructor(private prisma: PrismaService){}
+    async deleteUser(userId: number) {
+        return this.prisma.user.delete({
+        where: { id: userId },
+        }); 
+    }
+
+    async updateUser(userId: number, updateData: UpdateUserDto) {
+        console.log(updateData)
+        return this.prisma.user.update({
+          where: { id: userId },
+          data: {
+            ...updateData,
+            updatedAt: new Date(),
+          },
+        });
+      }
+}

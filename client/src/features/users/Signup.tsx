@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import styles from './Signup.module.css';
+import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom';
+
 
 interface SignupFormData {
   firstName: string;
@@ -9,6 +12,7 @@ interface SignupFormData {
 }
 
 export const SignupPage: React.FC = () => {
+  const navigate = useNavigate();
   const [form, setForm] = useState<SignupFormData>({
     firstName: '',
     lastName: '',
@@ -45,21 +49,22 @@ export const SignupPage: React.FC = () => {
       if (!res.ok) {
         setError(data.message || 'Signup failed');
       } else {
+        Cookies.set('token', data.access_token, { expires: 1 / 24 }); 
         setSuccess('Signup successful!');
+        navigate('/signin')
         setForm({ firstName: '', lastName: '', email: '', password: '' });
-        // optionally store token: localStorage.setItem('token', data.access_token);
       }
     } catch (err: any) {
-      setError('Something went wrong. Please try again.' + err);
+      setError('Something went wrong. Please try again. ' + err);
       console.log(err);
     }
   };
 
   return (
-    <div className = {styles.Container}>
-      <div className = {styles.title}>
+    <div className={styles.Container}>
+      <div className={styles.title}>
         <h2>Create account</h2>
-        <div className = {styles.formContainer}>
+        <div className={styles.formContainer}>
           <form onSubmit={handleSubmit}>
             <div className={styles.nameContainer}>
               <div>
@@ -74,7 +79,7 @@ export const SignupPage: React.FC = () => {
               </div>
               <br />
               <div>
-              <p>Last Name</p>
+                <p>Last Name</p>
                 <input
                   name="lastName"
                   placeholder="Last Name"
@@ -106,7 +111,6 @@ export const SignupPage: React.FC = () => {
             />
             <br />
             <button type="submit" className={styles.btt}>Create Account</button>
-
           </form>
           {error && <p style={{ color: 'red' }}>{error}</p>}
           {success && <p style={{ color: 'green' }}>{success}</p>}
@@ -115,5 +119,3 @@ export const SignupPage: React.FC = () => {
     </div>
   );
 };
-
-// export default SignupPage;

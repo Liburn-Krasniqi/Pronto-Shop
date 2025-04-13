@@ -4,6 +4,8 @@ import { LandingPage } from "../../features/landing/components/LandingPage";
 import { Users } from "../../features/users/Users";
 import { SigninPage } from "../../features/users/Signin";
 import { SignupPage } from "../../features/users/Signup";
+import { ProfilePage } from "../../features/users/ProfilePage"
+import { EditProfilePage } from "../../features/users/UpdateProfile";
 
 export function AppRoutes() {
   return (
@@ -13,6 +15,10 @@ export function AppRoutes() {
         <Route path="users" element={<Users />} />
         <Route path="signup" element={<SignupPage />} />
         <Route path="signin" element={<SigninPage />} />
+        <Route path="ProfilePage" element={<ProfilePage />} />
+        <Route path="EditProfilePage" element={<EditProfilePage />} />
+
+
       </Route>
     </Routes>
   );

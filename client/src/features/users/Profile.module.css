@@ -1,0 +1,49 @@
+.container {
+    width: 80%;
+    margin: 20px auto;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .title {
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+  
+  .userInfo {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .userInfo p {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+  }
+  
+  .deleteButton {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .updateButton {
+    margin-top: 20px;
+    margin-left: 10px;
+    padding: 10px 20px;
+    background-color: rgb(7, 152, 62);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .deleteButton:hover {
+    background-color: darkred;
+  }
+  

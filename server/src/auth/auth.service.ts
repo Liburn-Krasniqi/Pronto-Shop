@@ -7,10 +7,17 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from '../user/user.schema';
+import { JwtService } from "@nestjs/jwt";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class AuthService{
-    constructor(private prisma: PrismaService,){}
+    constructor(private prisma: PrismaService,
+    private jwt: JwtService,
+    private config: ConfigService,
+    )
+    
+    {}
 
     async signup(dto: SignUpDto) {
       const hash = await argon.hash(dto.password);
@@ -33,7 +40,7 @@ export class AuthService{
                 lastName: true,
             }
         })
-        return user;
+        return this.signToken(user.id, user.email)
       }catch(error){
             if (error instanceof PrismaClientKnownRequestError){
                 if (error.code === 'P2002'){
@@ -74,10 +81,28 @@ export class AuthService{
                 'Credentials Incorrect'
             );
         }
-        
-        //this shouldnt return hash but idk how to do that right now
-        //send back the user
-        delete (user as any).hash;
-        return user
+        return this.signToken(user.id, user.email)
     }
+
+    async signToken(userId: number, email:string): Promise<{ access_token: string }> {
+        const payload = {
+            sub: userId, email
+        }
+        const secret = this.config.get('JWT_SECRET')
+
+        const token = await this.jwt.signAsync(
+            payload,
+            {
+                expiresIn:'1h',
+                secret: secret
+            },
+        );
+        return {
+            access_token: token,
+        };
+    }
+
+    
+      
+
 }

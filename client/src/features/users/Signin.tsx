@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import styles from './Signup.module.css';
+import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 
 interface SigninFormData {
@@ -7,7 +9,15 @@ interface SigninFormData {
   password: string;
 }
 
+interface User {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+}
+
 export const SigninPage: React.FC = () => {
+  const navigate = useNavigate();
   const [form, setForm] = useState<SigninFormData>({
     email: '',
     password: '',
@@ -15,6 +25,7 @@ export const SigninPage: React.FC = () => {
 
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({
@@ -43,8 +54,22 @@ export const SigninPage: React.FC = () => {
         setError(data.message || 'Sign in failed');
       } else {
         setSuccess('Signed in!');
-        // Save token or user info
-        localStorage.setItem('access_token', data.access_token);
+        Cookies.set('access_token', data.access_token);
+        navigate('/profilePage')
+
+        const profileRes = await fetch('http://localhost:3333/users/me', {
+          headers: {
+            Authorization: `Bearer ${data.access_token}`,
+          },
+        });
+
+        const profile = await profileRes.json();
+
+        if (profileRes.ok) {
+          setUser(profile);
+        } else {
+          setError('Could not fetch user info');
+        }
       }
     } catch (err: any) {
       setError('Something went wrong. Please try again. ' + err.message);
@@ -53,10 +78,10 @@ export const SigninPage: React.FC = () => {
   };
 
   return (
-    <div className = {styles.Container}>
-      <div className = {styles.title}>
+    <div className={styles.Container}>
+      <div className={styles.title}>
         <h2>Sign In</h2>
-        <div className = {styles.formContainer}>
+        <div className={styles.formContainer}>
           <form onSubmit={handleSubmit}>
             <p>Email</p>
             <input
@@ -77,15 +102,20 @@ export const SigninPage: React.FC = () => {
               required
             />
             <br />
-            <button type="submit"  className={styles.btt}>Sign In</button>
+            <button type="submit" className={styles.btt}>Sign In</button>
           </form>
         </div>
 
         {error && <p style={{ color: 'red' }}>{error}</p>}
         {success && <p style={{ color: 'green' }}>{success}</p>}
+
+        {user && (
+          <div className={styles.profileCard}>
+            <h3>Welcome, {user.firstName} {user.lastName}!</h3>
+            <p>Email: {user.email}</p>
+          </div>
+        )}
       </div>
     </div>
   );
 };
-
-// export default SigninPage;
