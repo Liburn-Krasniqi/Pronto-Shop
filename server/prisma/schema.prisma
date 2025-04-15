@@ -26,3 +26,29 @@ model Bookmark {
 
   @@map("bookmarks")
 }
+
+
+model Vendor{
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String
+  businessName String @unique
+  email String @unique
+  hash String
+  phone_number String
+
+  //Per momentin po i lojme atributet per adrese te kjo tabele mirepo ma vone garant
+  //ka me na u duft me kriju ni tabel te veqant per adrese
+  country String
+  city String
+  zipCode String
+  street String
+  
+  
+
+  // products Product[]
+
+  @@map("vendors")
+}
