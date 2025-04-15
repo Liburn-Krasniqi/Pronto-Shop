@@ -87,11 +87,16 @@ export function EditVendor() {
 
   return (
     <div className="container mt-5">
+      <div className='text-center mb-5'>
+        <img alt="Pronto Logo" src="/letter-p.svg" />
+      </div> 
       <div className="row justify-content-center">
-        <div className="col-md-8">
-          <div className="card shadow-sm">
+        <div className="col-md-8 mb-5">
+          <div className="card rounded-4 shadow-bottom border-0">
             <div className="card-body p-4">
-              <h3 className="card-title text-center mb-4">Edit Business</h3>
+            <h3 className="card-title text-center mb-4 color-1 mb-4">
+              Edit <span className='color-1'>ProntoBusiness</span> Account
+            </h3>
 
               {message && (
                 <div className={`alert alert-${message.type}`} role="alert">
@@ -216,10 +221,11 @@ export function EditVendor() {
                   />
                 </div>
 
-                <button type="submit" className="w-100 background-1 rounded p-2 text-white border-0">
-                  Update Vendor
+                <button type="submit" className="w-100 background-2 rounded p-2 text-white border-0 mt-2">
+                  Edit Account
                 </button>
-              </form>
+               
+              </form> 
             </div>
           </div>
         </div>

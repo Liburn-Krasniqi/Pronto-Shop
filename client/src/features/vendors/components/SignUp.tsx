@@ -82,7 +82,7 @@ export function SignupForm() {
       </div>      
       <div className="row justify-content-center">
         <div className="col-md-8 mb-5">
-          <div className="card rounded-4 shadow-bottom">
+          <div className="card rounded-4 shadow-bottom border-0">
             <div className="card-body p-4">
               <h3 className="card-title text-center mb-4 color-1 mb-4">Create <span className='color-1'>ProntoBusiness</span> Account</h3>
 
