@@ -93,6 +93,7 @@ export const SigninPage: React.FC = () => {
               required
             />
             <br />
+            <p>Password</p>
             <input
               name="password"
               type="password"
@@ -102,19 +103,15 @@ export const SigninPage: React.FC = () => {
               required
             />
             <br />
-            <button type="submit" className={styles.btt}>Sign In</button>
+            <button type="submit" className={styles.btt}>Create Account</button>
           </form>
+          {error && <p style={{ color: 'red' }}>{error}</p>}
+          {success && <p style={{ color: 'green' }}>{success}</p>}
         </div>
-
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        {success && <p style={{ color: 'green' }}>{success}</p>}
-
-        {user && (
-          <div className={styles.profileCard}>
-            <h3>Welcome, {user.firstName} {user.lastName}!</h3>
-            <p>Email: {user.email}</p>
+          <div className={styles.BottomInfo}>
+          <hr />
+          <p>Don't have an account? <span onClick={() => navigate('/signup')}  style={{ color: '#81B214', cursor: 'pointer'}}> Sign up</span></p>
           </div>
-        )}
       </div>
     </div>
   );

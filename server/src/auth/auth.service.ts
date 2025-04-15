@@ -20,6 +20,13 @@ export class AuthService{
     {}
 
     async signup(dto: SignUpDto) {
+        if(dto.password === dto.passwordRepeat){
+
+        }else{
+            throw new ForbiddenException(
+                'Passwprds do not match!',
+            );
+        }
       const hash = await argon.hash(dto.password);
       
       try{
@@ -93,7 +100,7 @@ export class AuthService{
         const token = await this.jwt.signAsync(
             payload,
             {
-                expiresIn:'1h',
+                expiresIn:'1d',
                 secret: secret
             },
         );

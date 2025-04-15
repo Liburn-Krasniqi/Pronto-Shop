@@ -5,19 +5,19 @@ import { useNavigate } from 'react-router-dom';
 
 
 interface SignupFormData {
-  firstName: string;
-  lastName: string;
+  fullName: string;
   email: string;
   password: string;
+  passwordRepeat: string;
 }
 
 export const SignupPage: React.FC = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState<SignupFormData>({
-    firstName: '',
-    lastName: '',
+    fullName: '',
     email: '',
     password: '',
+    passwordRepeat: '',
   });
 
   const [error, setError] = useState<string | null>(null);
@@ -34,6 +34,7 @@ export const SignupPage: React.FC = () => {
     e.preventDefault();
     setError(null);
     setSuccess(null);
+    const [firstName = '', lastName = ''] = form.fullName.trim().split(' ');
 
     try {
       const res = await fetch('http://localhost:3333/auth/signup', {
@@ -41,7 +42,13 @@ export const SignupPage: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          email: form.email,
+          password: form.password,
+          passwordRepeat: form.passwordRepeat,
+          firstName,
+          lastName,
+        }),
       });
 
       const data = await res.json();
@@ -66,30 +73,15 @@ export const SignupPage: React.FC = () => {
         <h2>Create account</h2>
         <div className={styles.formContainer}>
           <form onSubmit={handleSubmit}>
-            <div className={styles.nameContainer}>
-              <div>
-                <p>First Name</p>
-                <input
-                  name="firstName"
-                  placeholder="First Name"
-                  value={form.firstName}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+              <p>Full Name</p>
+              <input
+                name="fullName"
+                placeholder="Full Name"
+                value={form.fullName}
+                onChange={handleChange}
+                required
+              />
               <br />
-              <div>
-                <p>Last Name</p>
-                <input
-                  name="lastName"
-                  placeholder="Last Name"
-                  value={form.lastName}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <br />
-            </div>
             <p>Email</p>
             <input
               name="email"
@@ -109,12 +101,26 @@ export const SignupPage: React.FC = () => {
               onChange={handleChange}
               required
             />
+            <p>Re-enter Password</p>
+            <input
+              name="passwordRepeat"
+              type="password"
+              placeholder="Password Repeat"
+              value={form.passwordRepeat}
+              onChange={handleChange}
+              required
+            />
             <br />
             <button type="submit" className={styles.btt}>Create Account</button>
           </form>
           {error && <p style={{ color: 'red' }}>{error}</p>}
           {success && <p style={{ color: 'green' }}>{success}</p>}
         </div>
+          <div className={styles.BottomInfo}>
+          <p>By creating an account, you agree to ProntoShop's Conditions of Use amd Privacy Notice</p>
+          <hr />
+          <p>Already have an account? <span onClick={() => navigate('/signin')}  style={{ color: '#81B214', cursor: 'pointer'}}> Sign in</span></p>
+          </div>
       </div>
     </div>
   );

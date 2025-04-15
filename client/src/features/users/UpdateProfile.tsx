@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from './Profile.module.css';
+import styles from './EditProfile.module.css';
 import Cookies from 'js-cookie';
 
 interface EditProfileFormData {
   firstName: string;
   lastName: string;
   email: string;
-  password: string;
+  CurrentPassword: string;
+  NewPassword?: string;
 }
 
 export const EditProfilePage: React.FC = () => {
@@ -15,16 +16,16 @@ export const EditProfilePage: React.FC = () => {
     firstName: '',
     lastName: '',
     email: '',
-    password: '',
+    CurrentPassword: '',
+    NewPassword: '',
   });
-  
+
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch user profile data
     const token = Cookies.get('access_token');
     if (token) {
       fetch('http://localhost:3333/users/me', {
@@ -39,7 +40,8 @@ export const EditProfilePage: React.FC = () => {
             firstName: data.firstName,
             lastName: data.lastName,
             email: data.email,
-            password: '',
+            CurrentPassword: '',
+            NewPassword: '',
           });
         })
         .catch((err) => {
@@ -72,27 +74,26 @@ export const EditProfilePage: React.FC = () => {
       });
 
       const data = await res.json();
-      console.log('Form data being sent:', form);
       if (!res.ok) {
         setError(data.message || 'Profile update failed');
       } else {
         setSuccess('Profile updated successfully!');
         setUser(data);
-        navigate('/profilePage')
+        navigate('/profilePage');
       }
     } catch (err) {
-      setError('Something went wrong. Please try again.' + err);
+      setError('Something went wrong. Please try again.');
       console.error(err);
     }
   };
 
   return (
-    <div className={styles.Container}>
-      <h2>Edit Profile</h2>
-      <div className={styles.formContainer}>
+    <div className={styles.container}>
+      <div className={styles.card}>
+        <h2>Edit Profile</h2>
         <form onSubmit={handleSubmit}>
-          <div>
-            <p>First Name</p>
+          <div className={styles.formGroup}>
+            <label>First Name</label>
             <input
               name="firstName"
               placeholder="First Name"
@@ -101,8 +102,9 @@ export const EditProfilePage: React.FC = () => {
               required
             />
           </div>
-          <div>
-            <p>Last Name</p>
+
+          <div className={styles.formGroup}>
+            <label>Last Name</label>
             <input
               name="lastName"
               placeholder="Last Name"
@@ -111,8 +113,9 @@ export const EditProfilePage: React.FC = () => {
               required
             />
           </div>
-          <div>
-            <p>Email</p>
+
+          <div className={styles.formGroup}>
+            <label>Email</label>
             <input
               name="email"
               type="email"
@@ -122,21 +125,37 @@ export const EditProfilePage: React.FC = () => {
               required
             />
           </div>
-          <div>
-            {/* <p>Password</p>
+
+          <div className={styles.formGroup}>
+            <label>Current Password</label>
             <input
-              name="password"
+              name="CurrentPassword"
               type="password"
-              placeholder="Password"
-              value={form.password}
+              placeholder="Enter your current password"
+              value={form.CurrentPassword}
               onChange={handleChange}
-            /> */}
+              required
+            />
           </div>
-          <button type="submit" className={styles.btt}>Save Changes</button>
+
+          <div className={styles.formGroup}>
+            <label>New Password (optional)</label>
+            <input
+              name="NewPassword"
+              type="password"
+              placeholder="Enter new password (if changing)"
+              value={form.NewPassword}
+              onChange={handleChange}
+            />
+          </div>
+
+          <button type="submit" className={styles.submitButton}>
+            Save Changes
+          </button>
         </form>
 
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        {success && <p style={{ color: 'green' }}>{success}</p>}
+        {error && <p className={styles.errorMessage}>{error}</p>}
+        {success && <p className={styles.successMessage}>{success}</p>}
       </div>
     </div>
   );

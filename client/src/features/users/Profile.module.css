@@ -1,49 +1,71 @@
-.container {
-    width: 80%;
-    margin: 20px auto;
-    padding: 20px;
-    text-align: center;
-  }
-  
-  .title {
-    font-size: 2rem;
-    margin-bottom: 20px;
-  }
-  
-  .userInfo {
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .userInfo p {
-    font-size: 1.1rem;
-    margin-bottom: 10px;
-  }
-  
-  .deleteButton {
-    margin-top: 20px;
-    padding: 10px 20px;
-    background-color: red;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
+/* Profile.module.css */
 
-  .updateButton {
-    margin-top: 20px;
-    margin-left: 10px;
-    padding: 10px 20px;
-    background-color: rgb(7, 152, 62);
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .deleteButton:hover {
-    background-color: darkred;
-  }
-  
+.container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.title h2 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.errorMessage {
+  color: red;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.userCard {
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.userInfo p {
+  font-size: 1.1rem;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.button {
+  padding: 12px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 48%;
+}
+
+.deleteButton {
+  background-color: #ff4d4d;
+  color: white;
+}
+
+.deleteButton:hover {
+  background-color: #ff1a1a;
+}
+
+.updateButton {
+  background-color: #81b214;
+  color: white;
+}
+
+.updateButton:hover {
+  background-color: #45a049;
+}

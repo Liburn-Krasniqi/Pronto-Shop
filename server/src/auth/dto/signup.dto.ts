@@ -12,6 +12,10 @@ export class SignUpDto{
     password: string;
 
     @IsString()
+    @MinLength(8)
+    passwordRepeat: string;
+
+    @IsString()
     @IsNotEmpty()
     firstName: string;
 

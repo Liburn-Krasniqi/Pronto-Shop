@@ -1,5 +1,7 @@
 .formContainer{
     padding: 0px 40px 20px 40px;
+    width: 400px;
+    
 }
 
 .Container{
@@ -8,21 +10,7 @@
     align-items: center;
     height: 80vh;
     width: 100vw;
-}
-.nameContainer{
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-
-}
-
-.nameContainer input {
-    width: 100%;
-    max-width: 125px;
-    margin: 0px !important;
-    border-radius: 9px;
-    height: 32px;
-
+    
 }
 
 .Container p {
@@ -64,4 +52,8 @@
     background-color: white;
     padding: 20px;
     box-shadow: 1px 3px 2px rgba(0, 0, 0, 0.1); /* x | y | blur */
+}
+
+.BottomInfo{
+    max-width: 400px;
 }

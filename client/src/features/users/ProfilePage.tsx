@@ -16,8 +16,8 @@ export const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
 
   const profileEditPage = () => {
-        navigate('/EditProfilePage');
-      };
+    navigate('/EditProfilePage');
+  };
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -27,7 +27,6 @@ export const ProfilePage: React.FC = () => {
         return;
       }
 
-      
       try {
         const res = await fetch('http://localhost:3333/users/me', {
           method: 'GET',
@@ -86,27 +85,31 @@ export const ProfilePage: React.FC = () => {
         <h2>User Profile</h2>
       </div>
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {error && <p className={styles.errorMessage}>{error}</p>}
 
       {user ? (
-        <div className={styles.userInfo}>
-          <p><strong>First Name:</strong> {user.firstName}</p>
-          <p><strong>Last Name:</strong> {user.lastName}</p>
-          <p><strong>Email:</strong> {user.email}</p>
+        <div className={styles.userCard}>
+          <div className={styles.userInfo}>
+            <p><strong>First Name:</strong> {user.firstName}</p>
+            <p><strong>Last Name:</strong> {user.lastName}</p>
+            <p><strong>Email:</strong> {user.email}</p>
+          </div>
 
-          <button
-            className={styles.deleteButton}
-            onClick={handleDeleteProfile}
-          >
-            Delete Profile
-          </button>
+          <div className={styles.buttonContainer}>
+            <button
+              className={`${styles.button} ${styles.deleteButton}`}
+              onClick={handleDeleteProfile}
+            >
+              Delete Profile
+            </button>
 
-          <button
-            className={styles.updateButton}
-            onClick={profileEditPage}
-          >
-            Edit Profile
-          </button>
+            <button
+              className={`${styles.button} ${styles.updateButton}`}
+              onClick={profileEditPage}
+            >
+              Edit Profile
+            </button>
+          </div>
         </div>
       ) : (
         <p>Loading user information...</p>

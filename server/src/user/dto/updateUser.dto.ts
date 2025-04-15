@@ -13,9 +13,13 @@ export class UpdateUserDto {
   @IsEmail()
   email?: string;
 
-//   @IsOptional()
-//   @IsString()
-//   password?: string;
-    @IsOptional()
-    updatedAt?: Date;
+  @IsString()
+  CurrentPassword?: string;
+
+  @IsOptional()
+  @IsString()
+  NewPassword?: string;
+
+  @IsOptional()
+  updatedAt?: Date;
 }
