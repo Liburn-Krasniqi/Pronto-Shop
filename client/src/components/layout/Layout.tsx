@@ -4,7 +4,7 @@ import { Footer } from "./Footer";
 
 const Layout = () => {
   return (
-    <div className="layout-container">
+    <div className="layout-container background-4">
       <MainNavigation />
       <main className="content">
         <Outlet /> {/* This renders the current route's component */}

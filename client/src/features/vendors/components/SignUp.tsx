@@ -1,6 +1,7 @@
 import { useState, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { Link } from 'react-router-dom';
 
 interface SignupFormData {
   name: string;
@@ -74,12 +75,16 @@ export function SignupForm() {
   };
 
   return (
+
     <div className="container mt-5">
+      <div className='text-center mb-5'>
+        <img alt="Pronto Logo" src="/letter-p.svg" />
+      </div>      
       <div className="row justify-content-center">
-        <div className="col-md-8">
-          <div className="card shadow-sm">
+        <div className="col-md-8 mb-5">
+          <div className="card rounded-4 shadow-bottom">
             <div className="card-body p-4">
-              <h3 className="card-title text-center mb-4 color-1">Business Signup</h3>
+              <h3 className="card-title text-center mb-4 color-1 mb-4">Create <span className='color-1'>ProntoBusiness</span> Account</h3>
 
               {message && (
                 <div className={`alert alert-${message.type}`} role="alert">
@@ -206,10 +211,22 @@ export function SignupForm() {
                   />
                 </div>
 
-                <button type="submit" className="w-100 background-1 rounded p-2 text-white border-0">
+                <button type="submit" className="w-100 background-2 rounded p-2 text-white border-0 mt-2">
                   Create Account
                 </button>
-              </form>
+               
+              </form> 
+              <p className='text-center my-4'>
+                By creating an account, you agree to ProntoShop’s 
+                <Link to="" className='color-2 text-decoration-none'> Conditions of Use </Link>
+                and <Link to="" className='color-2 text-decoration-none'>Privacy Notice </Link>
+              </p>
+              
+              <hr />
+              <p className='text-center mt-4'>
+                Already have an account? 
+                <Link to="" className='color-2 text-decoration-none'> Sign in</Link>
+              </p>
             </div>
           </div>
         </div>
