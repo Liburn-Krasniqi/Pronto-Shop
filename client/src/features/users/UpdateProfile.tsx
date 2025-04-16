@@ -1,61 +1,52 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styles from './EditProfile.module.css';
+import React, { useState, useEffect } from 'react';
+import styles from './Signup.module.css';
 import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom';
 
-interface EditProfileFormData {
+interface EditProfileForm {
   firstName: string;
   lastName: string;
   email: string;
-  CurrentPassword: string;
-  NewPassword?: string;
+  currentPassword: string;
+  newPassword?: string;
 }
 
 export const EditProfilePage: React.FC = () => {
-  const [form, setForm] = useState<EditProfileFormData>({
+  const navigate = useNavigate();
+  const [form, setForm] = useState<EditProfileForm>({
     firstName: '',
     lastName: '',
     email: '',
-    CurrentPassword: '',
-    NewPassword: '',
+    currentPassword: '',
+    newPassword: '',
   });
 
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [user, setUser] = useState<any>(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
-    const token = Cookies.get('access_token');
-    if (token) {
-      fetch('http://localhost:3333/users/me', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+    fetch('http://localhost:3333/users/me', {
+      headers: {
+        Authorization: `Bearer ${Cookies.get('token')}`,
+      },
+    })
+      .then(res => res.json())
+      .then(data => {
+        setForm(prev => ({
+          ...prev,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: data.email,
+        }));
       })
-        .then((res) => res.json())
-        .then((data) => {
-          setUser(data);
-          setForm({
-            firstName: data.firstName,
-            lastName: data.lastName,
-            email: data.email,
-            CurrentPassword: '',
-            NewPassword: '',
-          });
-        })
-        .catch((err) => {
-          setError('Error fetching user data');
-          console.error(err);
-        });
-    }
+      .catch(err => {
+        setError('Failed to fetch user data.');
+        console.error(err);
+      });
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -68,17 +59,16 @@ export const EditProfilePage: React.FC = () => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${Cookies.get('access_token')}`,
+          Authorization: `Bearer ${Cookies.get('token')}`,
         },
         body: JSON.stringify(form),
       });
 
       const data = await res.json();
       if (!res.ok) {
-        setError(data.message || 'Profile update failed');
+        setError(data.message || 'Update failed');
       } else {
         setSuccess('Profile updated successfully!');
-        setUser(data);
         navigate('/profilePage');
       }
     } catch (err) {
@@ -88,11 +78,11 @@ export const EditProfilePage: React.FC = () => {
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.card}>
+    <div className={styles.Container}>
+      <div className={styles.title}>
         <h2>Edit Profile</h2>
-        <form onSubmit={handleSubmit}>
-          <div className={styles.formGroup}>
+        <div className={styles.formContainer}>
+          <form onSubmit={handleSubmit}>
             <label>First Name</label>
             <input
               name="firstName"
@@ -101,9 +91,6 @@ export const EditProfilePage: React.FC = () => {
               onChange={handleChange}
               required
             />
-          </div>
-
-          <div className={styles.formGroup}>
             <label>Last Name</label>
             <input
               name="lastName"
@@ -112,9 +99,6 @@ export const EditProfilePage: React.FC = () => {
               onChange={handleChange}
               required
             />
-          </div>
-
-          <div className={styles.formGroup}>
             <label>Email</label>
             <input
               name="email"
@@ -124,38 +108,29 @@ export const EditProfilePage: React.FC = () => {
               onChange={handleChange}
               required
             />
-          </div>
-
-          <div className={styles.formGroup}>
             <label>Current Password</label>
             <input
-              name="CurrentPassword"
+              name="currentPassword"
               type="password"
-              placeholder="Enter your current password"
-              value={form.CurrentPassword}
+              placeholder="Enter current password"
+              value={form.currentPassword}
               onChange={handleChange}
               required
             />
-          </div>
-
-          <div className={styles.formGroup}>
-            <label>New Password (optional)</label>
+            <label>New Password</label>
             <input
-              name="NewPassword"
+              name="newPassword"
               type="password"
-              placeholder="Enter new password (if changing)"
-              value={form.NewPassword}
+              placeholder="Enter new password (optional)"
+              value={form.newPassword}
               onChange={handleChange}
             />
-          </div>
-
-          <button type="submit" className={styles.submitButton}>
-            Save Changes
-          </button>
-        </form>
-
-        {error && <p className={styles.errorMessage}>{error}</p>}
-        {success && <p className={styles.successMessage}>{success}</p>}
+            <br />
+            <button type="submit" className={styles.btt}>Save Changes</button>
+          </form>
+          {error && <p style={{ color: 'red' }}>{error}</p>}
+          {success && <p style={{ color: 'green' }}>{success}</p>}
+        </div>
       </div>
     </div>
   );

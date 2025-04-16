@@ -68,12 +68,16 @@ export const SignupPage: React.FC = () => {
   };
 
   return (
-    <div className={styles.Container}>
-      <div className={styles.title}>
-        <h2>Create account</h2>
-        <div className={styles.formContainer}>
-          <form onSubmit={handleSubmit}>
-              <p>Full Name</p>
+    <div>
+      <div className={styles.logo}>
+        <img alt="Pronto Logo" src="/letter-p.svg" />
+      </div>
+      <div className={styles.Container}>
+        <div className={styles.title}>
+          <h2>Create account</h2>
+          <div className={styles.formContainer}>
+            <form onSubmit={handleSubmit}>
+              <label htmlFor="">Full name</label>
               <input
                 name="fullName"
                 placeholder="Full Name"
@@ -82,45 +86,47 @@ export const SignupPage: React.FC = () => {
                 required
               />
               <br />
-            <p>Email</p>
-            <input
-              name="email"
-              type="email"
-              placeholder="Email"
-              value={form.email}
-              onChange={handleChange}
-              required
-            />
-            <br />
-            <p>Password</p>
-            <input
-              name="password"
-              type="password"
-              placeholder="Password"
-              value={form.password}
-              onChange={handleChange}
-              required
-            />
-            <p>Re-enter Password</p>
-            <input
-              name="passwordRepeat"
-              type="password"
-              placeholder="Password Repeat"
-              value={form.passwordRepeat}
-              onChange={handleChange}
-              required
-            />
-            <br />
-            <button type="submit" className={styles.btt}>Create Account</button>
-          </form>
-          {error && <p style={{ color: 'red' }}>{error}</p>}
-          {success && <p style={{ color: 'green' }}>{success}</p>}
+              <label htmlFor="">Email</label>
+              <input
+                name="email"
+                type="email"
+                placeholder="Email"
+                value={form.email}
+                onChange={handleChange}
+                required
+              />
+              <br />
+              <label htmlFor="">Password</label>
+              <input
+                name="password"
+                type="password"
+                placeholder="Password"
+                value={form.password}
+                onChange={handleChange}
+                required
+              />
+              <label htmlFor="">Re-enter password</label>
+              <input
+                name="passwordRepeat"
+                type="password"
+                placeholder="Password Repeat"
+                value={form.passwordRepeat}
+                onChange={handleChange}
+                required
+              />
+              <br />
+              <button type="submit" className={styles.btt}>Create Account</button>
+            </form>
+            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {success && <p style={{ color: 'green' }}>{success}</p>}
+          
+              <div className={styles.BottomInfo}>
+              <p>By creating an account, you agree to ProntoShop's Conditions of Use amd Privacy Notice</p>
+              <hr />
+              <p>Already have an account? <span onClick={() => navigate('/signin')}  style={{ color: '#81B214', cursor: 'pointer'}}> Sign in</span></p>
+              </div>
+            </div>
         </div>
-          <div className={styles.BottomInfo}>
-          <p>By creating an account, you agree to ProntoShop's Conditions of Use amd Privacy Notice</p>
-          <hr />
-          <p>Already have an account? <span onClick={() => navigate('/signin')}  style={{ color: '#81B214', cursor: 'pointer'}}> Sign in</span></p>
-          </div>
       </div>
     </div>
   );

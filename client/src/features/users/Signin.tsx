@@ -78,40 +78,46 @@ export const SigninPage: React.FC = () => {
   };
 
   return (
-    <div className={styles.Container}>
-      <div className={styles.title}>
-        <h2>Sign In</h2>
-        <div className={styles.formContainer}>
-          <form onSubmit={handleSubmit}>
-            <p>Email</p>
-            <input
-              name="email"
-              type="email"
-              placeholder="Email"
-              value={form.email}
-              onChange={handleChange}
-              required
-            />
-            <br />
-            <p>Password</p>
-            <input
-              name="password"
-              type="password"
-              placeholder="Password"
-              value={form.password}
-              onChange={handleChange}
-              required
-            />
-            <br />
-            <button type="submit" className={styles.btt}>Create Account</button>
-          </form>
-          {error && <p style={{ color: 'red' }}>{error}</p>}
-          {success && <p style={{ color: 'green' }}>{success}</p>}
-        </div>
-          <div className={styles.BottomInfo}>
-          <hr />
-          <p>Don't have an account? <span onClick={() => navigate('/signup')}  style={{ color: '#81B214', cursor: 'pointer'}}> Sign up</span></p>
+    <div>
+      <div className={styles.logo}>
+        <img alt="Pronto Logo" src="/letter-p.svg" />
+      </div>
+      <div className={styles.Container}>
+        <div className={styles.title}>
+          <h2>Sign In</h2>
+          <div className={styles.formContainer}>
+            <form onSubmit={handleSubmit}>
+              <label htmlFor="">Email</label>
+              <input
+                name="email"
+                type="email"
+                placeholder="Email"
+                value={form.email}
+                onChange={handleChange}
+                required
+              />
+              <br />
+              <label htmlFor="">Password</label>
+              <input
+                name="password"
+                type="password"
+                placeholder="Password"
+                value={form.password}
+                onChange={handleChange}
+                required
+              />
+              <br />
+              <button type="submit" className={styles.btt}>Sin In</button>
+            </form>
+            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {success && <p style={{ color: 'green' }}>{success}</p>}
+          
+            <div className={styles.BottomInfo}>
+            <hr />
+            <p>Don't have an account? <span onClick={() => navigate('/signup')}  style={{ color: '#81B214', cursor: 'pointer'}}> Sign up</span></p>
+            </div>
           </div>
+        </div>
       </div>
     </div>
   );
