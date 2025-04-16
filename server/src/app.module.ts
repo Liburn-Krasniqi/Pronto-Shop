@@ -4,6 +4,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { BookmarkModule } from './bookmark/bookmark.module';
+import { VendorModule } from './vendor/vendor.module';
 import { LogsModule } from './log/logs.module';
 import { MongoModule } from './mongo';
 
@@ -17,6 +18,7 @@ import { MongoModule } from './mongo';
     AuthModule,
     UserModule,
     BookmarkModule,
+    VendorModule,
     LogsModule,
   ],
 })
