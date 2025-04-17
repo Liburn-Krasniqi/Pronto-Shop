@@ -14,7 +14,9 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true,
     }),
+    
   );
+  app.enableCors();
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle(`${process.env.APP_NAME} API`)
