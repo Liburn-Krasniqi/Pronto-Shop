@@ -77,10 +77,10 @@ export const SignupPage: React.FC = () => {
           <h2>Create account</h2>
           <div className={styles.formContainer}>
             <form onSubmit={handleSubmit}>
-              <label htmlFor="">Full name</label>
+              <label htmlFor="">Your name</label>
               <input
                 name="fullName"
-                placeholder="Full Name"
+                placeholder="First and Last Name"
                 value={form.fullName}
                 onChange={handleChange}
                 required
@@ -90,7 +90,7 @@ export const SignupPage: React.FC = () => {
               <input
                 name="email"
                 type="email"
-                placeholder="Email"
+                // placeholder="Email"
                 value={form.email}
                 onChange={handleChange}
                 required
@@ -100,7 +100,7 @@ export const SignupPage: React.FC = () => {
               <input
                 name="password"
                 type="password"
-                placeholder="Password"
+                placeholder="At least 8 characters"
                 value={form.password}
                 onChange={handleChange}
                 required
@@ -109,7 +109,7 @@ export const SignupPage: React.FC = () => {
               <input
                 name="passwordRepeat"
                 type="password"
-                placeholder="Password Repeat"
+                // placeholder="Password Repeat"
                 value={form.passwordRepeat}
                 onChange={handleChange}
                 required
@@ -121,7 +121,7 @@ export const SignupPage: React.FC = () => {
             {success && <p style={{ color: 'green' }}>{success}</p>}
           
               <div className={styles.BottomInfo}>
-              <p>By creating an account, you agree to ProntoShop's Conditions of Use amd Privacy Notice</p>
+              <p>By creating an account, you agree to ProntoShop's <span className={styles.asd}>Conditions of Use</span> and <span className={styles.BottomInfo}>Privacy Notice</span></p>
               <hr />
               <p>Already have an account? <span onClick={() => navigate('/signin')}  style={{ color: '#81B214', cursor: 'pointer'}}> Sign in</span></p>
               </div>
