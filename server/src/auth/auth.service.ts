@@ -4,9 +4,6 @@ import { SignInDto } from "./dto/signin.dto";
 import { SignUpDto } from "./dto/signup.dto";
 import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { User, UserDocument } from '../user/user.schema';
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 

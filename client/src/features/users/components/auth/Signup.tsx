@@ -59,7 +59,12 @@ export const SignupPage: React.FC = () => {
         Cookies.set('token', data.access_token, { expires: 1 / 24 }); 
         setSuccess('Signup successful!');
         navigate('/signin')
-        setForm({ firstName: '', lastName: '', email: '', password: '' });
+        setForm({
+          fullName: '',
+          email: '',
+          password: '',
+          passwordRepeat: '',
+        });
       }
     } catch (err: any) {
       setError('Something went wrong. Please try again. ' + err);
