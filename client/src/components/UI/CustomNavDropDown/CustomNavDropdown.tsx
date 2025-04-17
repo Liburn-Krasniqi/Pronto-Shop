@@ -14,7 +14,7 @@ export const CustomNavDropdown: React.FC<CustomNavDropdownProps> = ({
   className,
 }) => {
   return (
-    <NavDropdown title={title} className={className}>
+    <NavDropdown title={title} className={`${className}`}>
       {items.map(({ to, label }, index) => (
         <NavDropdown.Item key={index} as="div" className="text-decoration-none">
           {/* using the NavDropdown.item as a div to avoid a hydration error, bc div doesnt use <a> internally */}

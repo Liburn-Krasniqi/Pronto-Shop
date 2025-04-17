@@ -4,8 +4,8 @@ import InputGroup from "react-bootstrap/esm/InputGroup";
 
 export function SearchBar() {
   return (
-    <div className="w-100">
-      <InputGroup className={`position-relative ${classes.search}`}>
+    <div className={`w-100 ${classes.search}`}>
+      <InputGroup className={`position-relative`}>
         <Form.Control
           type="search"
           className={`rounded-4 ${classes.searchbar}`}
