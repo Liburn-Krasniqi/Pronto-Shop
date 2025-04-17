@@ -5,7 +5,7 @@ import { Users } from "../../features/users/Users";
 import { SigninPage } from "../../features/users/Signin";
 import { SignupPage } from "../../features/users/Signup";
 import { ProfilePage } from "../../features/users/ProfilePage"
-import { EditProfilePage } from "../../features/users/UpdateProfile";
+import { EditProfilePage } from "../../features/users/EditProfile";
 import { SignupForm } from "../../features/vendors/components/SignUp";
 import { ShowVendor } from "../../features/vendors/components/Show";
 import { EditVendor } from "../../features/vendors/components/Edit";

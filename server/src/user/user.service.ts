@@ -25,11 +25,11 @@ export class UserService{
       }
     
       // Check if CurrentPassword is provided
-      if (!updateData.CurrentPassword) {
+      if (!updateData.currentPassword) {
         throw new Error('Current password is required');
       }
     
-      const pwMatches = await argon.verify(user.hash, updateData.CurrentPassword);
+      const pwMatches = await argon.verify(user.hash, updateData.currentPassword);
       if (!pwMatches) {
         throw new Error('Current password is incorrect');
       }
@@ -42,8 +42,8 @@ export class UserService{
       if (updateData.lastName) updatePayload.lastName = updateData.lastName;
       if (updateData.email) updatePayload.email = updateData.email;
     
-      if (updateData.NewPassword) {
-        updatePayload.hash = await argon.hash(updateData.NewPassword);
+      if (updateData.newPassword) {
+        updatePayload.hash = await argon.hash(updateData.newPassword);
       }
     
       return this.prisma.user.update({

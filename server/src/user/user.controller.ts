@@ -30,7 +30,7 @@ export class UserController {
     ) {
       const userId = req.user.id;
       
-      console.log('Update data received from frontend:', updateData);
+      // console.log('Update data received from frontend:', updateData);
       const updatedUser = await this.UserService.updateUser(userId, updateData);
       
       return updatedUser;

@@ -28,7 +28,6 @@ model User {
 
 
 
-  bookmarks Bookmark[]
   paymentCards PaymentCard[]
   phoneNumbers PhoneNumber[]
   adresses Address[]
@@ -82,21 +81,6 @@ model Address{
   // @@id([userId])
   user User @relation(fields: [userId], references: [id])
   @@map("addresses")
-}
-
-model Bookmark {
-  id Int @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  title String
-  description String?
-  link String
-
-  userId Int
-
-  user User @relation(fields: [userId], references: [id])
-  @@map("bookmarks")
 }
 
 

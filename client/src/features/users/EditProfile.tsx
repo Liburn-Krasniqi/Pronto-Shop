@@ -25,9 +25,16 @@ export const EditProfilePage: React.FC = () => {
   const [success, setSuccess] = useState<string | null>(null);
 
   useEffect(() => {
+    const token = Cookies.get('access_token');
+
+    if (!token) {
+      setError('User is not authenticated.');
+      return;
+    }
+
     fetch('http://localhost:3333/users/me', {
       headers: {
-        Authorization: `Bearer ${Cookies.get('token')}`,
+        Authorization: `Bearer ${token}`,
       },
     })
       .then(res => res.json())
@@ -54,12 +61,19 @@ export const EditProfilePage: React.FC = () => {
     setError(null);
     setSuccess(null);
 
+    const token = Cookies.get('access_token');
+
+    if (!token) {
+      setError('User is not authenticated.');
+      return;
+    }
+
     try {
       const res = await fetch('http://localhost:3333/users/me', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${Cookies.get('token')}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(form),
       });
