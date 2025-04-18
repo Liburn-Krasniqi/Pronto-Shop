@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import styles from './Signup.module.css';
+import styles from '../auth/Signup.module.css';
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
 

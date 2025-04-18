@@ -107,7 +107,7 @@ export const SigninPage: React.FC = () => {
                 required
               />
               <br />
-              <button type="submit" className={styles.btt}>Sin In</button>
+              <button type="submit" className={styles.btt}>Sign In</button>
             </form>
             {error && <p style={{ color: 'red' }}>{error}</p>}
             {success && <p style={{ color: 'green' }}>{success}</p>}
