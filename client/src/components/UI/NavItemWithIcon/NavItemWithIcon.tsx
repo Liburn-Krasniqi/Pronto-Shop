@@ -10,7 +10,7 @@ export const NavItemWithIcon: React.FC<NavItemWithIconProps> = ({
   className,
 }) => {
   return (
-    <div className={`d-flex align-items-center ${className}`}>
+    <div className={`d-flex align-items-center text-start ${className}`}>
       <img src={iconSrc} alt="icon" className="me-2" />
       {text && <div>{text}</div>}
     </div>

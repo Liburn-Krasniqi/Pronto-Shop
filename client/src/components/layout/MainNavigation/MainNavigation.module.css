@@ -1,39 +1,120 @@
-.navbar{
-  background: #81B214;
-  position: relative;
-  z-index: 1000; /* much needed so that stuff doesnt appear in the back */
-
-  /* hardcoded height for now */
+/* Navbar styles */
+.navbar {
+  max-height: 100px;
   height: 66px;
-
-  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 25%);
+  position: relative;
+  z-index: 1000; /* Ensure dropdown stays on top of other stuff */
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 }
 
-.search {
-  height: 50px;
-  font-size: 32px;
-  font-weight: 270;
-  color:#8C8C8C;
-  box-shadow: inset 0px 4px 4px 0px rgba(0, 0, 0, 25%);
-  border: none;
+/* Toggle button styles */
+.toggleButton {
+  background-color: rgba(32, 106, 93, 1);
+  border-width: 1px;
+  margin-right: 1rem;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 }
 
-.collapse{
-  background-color: #206A5D;
-  width: 100%;
+.toggleButton:hover {
+  border-color: white;
 }
 
-.delivery {
-  font-size: small;
+.toggleButton:focus {
+  box-shadow: inset 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 }
 
-:global(.dropdown-toggle::after) {
-  color: white;
+/* Offcanvas styles */
+.offcanvas {
+  background-color: #206A5D !important;
 }
 
-/* nashta duhet me hjek edhe me zhvendos qet klas -Libi*/
-.navLinkNoUnderline {
-  text-decoration: none !important;
-  color: #81B214;
+.offcanvasHeader {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.offcanvasBody {
+  padding: 0 1.5rem;
+}
+
+.offcanvasNav {
+  gap: 1.5rem;
+}
+
+.navLink {
+  justify-content: flex-start !important;
+}
+
+/* Cart styles */
+.cartText {
+  display: none;
+}
+
+.cartIcon {
+  transition: all 0.3s ease;
+}
+
+/* Desktop styles (768px and up) */
+@media (min-width: 768px) {
+  .offcanvas {
+    width: auto !important;
+    position: static;
+    visibility: visible !important;
+    transform: none !important;
+  }
+  
+  .offcanvasBody {
+    padding: 0;
+  }
+  
+  .offcanvasNav {
+    gap: normal;
+  }
+  
+  .navLink {
+    justify-content: center !important;
+  }
+}
+
+/* Mobile styles (767.98px and down) */
+@media (max-width: 767.98px) {
+  .offcanvas {
+    width: 50% !important;
+  }
+  
+  .offcanvasHeader {
+    padding: 1rem 1.5rem;
+  }
+  
+  .offcanvasNav {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .offcanvasNav > * {
+    order: 1; /* Default order for all items */
+  }
+  
+  .offcanvasNav > :first-child {
+    order: 0; /* Search bar comes first */
+    margin-bottom: 1.5rem; /* Extra space below search */
+  }
+  
+  .custom-nav-dropdown .dropdown-menu {
+    position: relative !important;
+    transform: none !important;
+    width: 100%;
+    border: none;
+    background-color: transparent;
+  }
+  
+  .cartText {
+    display: inline;
+    color: white;
+    font-weight: 500;
+  }
+  
+  .cartIcon {
+    width: 36px !important;
+    height: 36px !important;
+  }
+}

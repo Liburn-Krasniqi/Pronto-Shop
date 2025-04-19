@@ -1,0 +1,30 @@
+.search{
+  max-width: 500px;
+}
+
+.searchbar{
+    height: 50px;
+
+    font-size: 32px;
+    font-weight: 350;
+    box-shadow: inset 0px 4px 4px 0px rgba(0, 0, 0, 25%);
+    border: none;
+}
+
+/* color of the "  Search" placeholder */
+.searchbar::placeholder {  
+    color: #8C8C8C;
+    opacity: 1; /* Because Firefox reduces opacity by default */
+}
+searchbar::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+    color: #8C8C8C;
+}
+.searchbar::-moz-placeholder { /* Firefox 19+ */
+  color: #8C8C8C;
+}
+.searchbar:-ms-input-placeholder { /* IE 10+ */
+  color: #8C8C8C;
+}
+.searchbar:-moz-placeholder { /* Firefox 18- */
+  color: #8C8C8C;
+}

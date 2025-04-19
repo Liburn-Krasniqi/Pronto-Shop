@@ -1,3 +1,5 @@
-export { CustomNavDropdown } from './CustomNavDropdown'
-export { NavItemWithIcon} from './NavItemWithIcon'
-export {ProductCard} from './ProductCard'
+//Barrel file for cleaner imports
+export * from "./CustomNavDropDown";
+export * from "./NavItemWithIcon";
+export * from "./ProductCard";
+export * from "./SearchBar";
