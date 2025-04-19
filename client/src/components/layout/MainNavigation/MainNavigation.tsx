@@ -11,7 +11,7 @@ export const MainNavigation: React.FC = () => {
       <Container fluid className="pe-0">
         <Row className="w-100">
           <Col xs={2} md={1} className="d-flex align-items-center">
-            <Navbar.Brand className="ms-3" href="#">
+            <Navbar.Brand className={`ms-3 ${classes.logo}`} href="#">
               <img alt="Pronto Logo" src="/letter-p.svg" />
             </Navbar.Brand>
             <Navbar.Toggle
@@ -42,6 +42,10 @@ export const MainNavigation: React.FC = () => {
                   fill
                   className={`w-100 d-flex flex-md-row flex-column ${classes.offcanvasNav}`}
                 >
+                  {/* Search Bar first in mobile */}
+                  <Nav.Item className="flex-grow-1 align-items-center my-2 d-md-none">
+                    <SearchBar />
+                  </Nav.Item>
                   <Nav.Item className="my-2 my-md-0">
                     <Nav.Link
                       href="#action1"
@@ -51,7 +55,9 @@ export const MainNavigation: React.FC = () => {
                         iconSrc="/Map-pin.svg"
                         text={
                           <span className="text-start">
-                            Deliver to <br />
+                            Deliver to{""}
+                            <span className="d-md-none"> </span>
+                            <br className="d-none d-md-inline" />
                             <strong>{"Kosovo"}</strong>
                           </span>
                         }
@@ -59,7 +65,7 @@ export const MainNavigation: React.FC = () => {
                     </Nav.Link>
                   </Nav.Item>
 
-                  <Nav.Item className="flex-grow-1 align-items-center my-2">
+                  <Nav.Item className="flex-grow-1 align-items-center my-2 d-none d-md-block">
                     <SearchBar />
                   </Nav.Item>
 
@@ -69,9 +75,11 @@ export const MainNavigation: React.FC = () => {
                   >
                     <CustomNavDropdown
                       title={
-                        <span className="text-white text-start">
-                          Hello, sign in <br />
-                          <strong>Accounts & Lists</strong>
+                        <span className="text-start text-white">
+                          Hello, sign in {""}
+                          <span className="d-md-none"> </span>
+                          <br className="d-none d-md-inline" />
+                          <strong>{"Accounts & Lists"}</strong>
                         </span>
                       }
                       items={[
@@ -89,9 +97,11 @@ export const MainNavigation: React.FC = () => {
                   >
                     <CustomNavDropdown
                       title={
-                        <span className="text-white text-start">
-                          Returns & <br />
-                          <strong>Orders</strong>
+                        <span className="text-start text-white">
+                          Returns & {""}
+                          <span className="d-md-none"> </span>
+                          <br className="d-none d-md-inline" />
+                          <strong>{"Orders"}</strong>
                         </span>
                       }
                       items={[
@@ -102,18 +112,21 @@ export const MainNavigation: React.FC = () => {
                       className="text-md-center text-start"
                     />
                   </Nav.Item>
-
                   <Nav.Item className="flex-grow-0 my-2 my-md-0">
                     <Nav.Link
                       href="#action1"
-                      className="d-flex justify-content-md-end justify-content-start"
+                      className="d-flex justify-content-md-end justify-content-start align-items-center"
                       style={{ width: "fit-content" }}
                     >
                       <img
                         alt="cart"
                         src="/Shopping-cart.svg"
                         style={{ width: "48px", height: "48px" }}
+                        className={classes.cartIcon}
                       />
+                      <span className={`ms-2 ${classes.cartText}`}>
+                        Your Cart
+                      </span>
                     </Nav.Link>
                   </Nav.Item>
                 </Nav>
