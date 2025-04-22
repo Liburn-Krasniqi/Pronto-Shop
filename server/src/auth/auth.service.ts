@@ -33,7 +33,7 @@ export class AuthService{
                 hash,
                 firstName: dto.firstName  ,
                 lastName: dto.lastName,
-                role: "user",
+                role: "user"
             },
             select: {
                 id: true,
@@ -41,7 +41,7 @@ export class AuthService{
                 createdAt: true,
                 updatedAt: true,
                 firstName: true,
-                lastName: true,
+                lastName: true
             }
         })
         return this.signToken(user.id, user.email)

@@ -24,13 +24,9 @@ model User {
   lastName String
   role String
 
-  
-
-
-
   paymentCards PaymentCard[]
   phoneNumbers PhoneNumber[]
-  adresses Address[]
+  addresses UserAddress[]
 
   @@map("users")
 }
@@ -56,9 +52,6 @@ model PaymentCard{//This is mostly placeholder since payments aren't added yet a
   expMonth String?
   expYear String?
   isDefault String?
-  
-
-
 
   // @@id([userId])
   @@map("paymentCards")
@@ -66,21 +59,29 @@ model PaymentCard{//This is mostly placeholder since payments aren't added yet a
   
 }
 
-model Address{
+model UserAddress {
   id Int @id @default(autoincrement())
-
   userId Int
-  
-
   street String?
   city String?
   state String?
   postalCode String?
   country String?
-  
-  // @@id([userId])
+
   user User @relation(fields: [userId], references: [id])
-  @@map("addresses")
+  @@index([userId])
+}
+
+model VendorAddress {
+  id Int @id @default(autoincrement())
+  vendorId Int
+  street String?
+  city String?
+  state String?
+  postalCode String?
+  country String?
+  vendor Vendor @relation(fields: [vendorId], references: [id])
+  @@index([vendorId])
 }
 
 
@@ -94,16 +95,8 @@ model Vendor{
   email String @unique
   hash String
   phone_number String
-
-  //Per momentin po i lojme atributet per adrese te kjo tabele mirepo ma vone garant
-  //ka me na u duft me kriju ni tabel te veqant per adrese
-  country String
-  city String
-  zipCode String
-  street String
   
-  
-
+  addresses VendorAddress[]
   // products Product[]
 
   @@map("vendors")

@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
-import { IsEmail, IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsEmail, IsNotEmpty, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { VendorAddressDto } from './vendorAddress.dto';
 
 export class UpdateVendorDto{
     @IsEmail()
@@ -23,18 +24,8 @@ export class UpdateVendorDto{
     phone_number?: string
 
     @IsOptional()
-    @IsString()
-    country?: string
-
-    @IsOptional()
-    @IsString()
-    city?: string
-
-    @IsOptional()
-    @IsString()
-    zipCode?: string
-
-    @IsOptional()
-    @IsString()
-    street?: string
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => VendorAddressDto)
+    addresses?: VendorAddressDto[];
 }
