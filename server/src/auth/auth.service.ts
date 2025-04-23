@@ -88,25 +88,72 @@ export class AuthService{
         return this.signToken(user.id, user.email)
     }
 
-    async signToken(userId: number, email:string): Promise<{ access_token: string }> {
+    async signToken(userId: number, email: string): Promise<{ 
+        access_token: string,
+        refresh_token: string 
+      }> {
         const payload = {
-            sub: userId, email
-        }
-        const secret = this.config.get('JWT_SECRET')
-
-        const token = await this.jwt.signAsync(
+          sub: userId, 
+          email
+        };
+        
+        const secret = this.config.get('JWT_SECRET');
+        const refreshSecret = this.config.get('JWT_REFRESH_SECRET');
+      
+        const [access_token, refresh_token] = await Promise.all([
+          this.jwt.signAsync(
             payload,
             {
-                expiresIn:'1d',
-                secret: secret
-            },
-        );
+              expiresIn: '15m', // shorter lifespan for access token
+              secret: secret
+            }
+          ),
+          this.jwt.signAsync(
+            payload,
+            {
+              expiresIn: '7d', // longer lifespan for refresh token
+              secret: refreshSecret
+            }
+          )
+        ]);
+      
+        // Store the refresh token in database
+        await this.prisma.refreshToken.create({
+          data: {
+            userId,
+            token: refresh_token,
+            expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days from now
+          }
+        });
+      
         return {
-            access_token: token,
+          access_token,
+          refresh_token
         };
     }
 
-    
+    async refreshTokens(userId: number, email: string, refreshToken: string) {
+        // Delete the old refresh token
+        await this.prisma.refreshToken.deleteMany({
+          where: {
+            token: refreshToken
+          }
+        });
       
+        // Generate new tokens
+        return this.signToken(userId, email);
+    }
 
+    async logout(userId: number, refreshToken: string) {
+        // Revoke the refresh token
+        await this.prisma.refreshToken.updateMany({
+          where: {
+            userId,
+            token: refreshToken
+          },
+          data: {
+            revoked: true
+          }
+        });
+    }
 }

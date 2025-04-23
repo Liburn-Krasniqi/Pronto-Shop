@@ -29,6 +29,7 @@ model User {
   addresses UserAddress[]
 
   @@map("users")
+  RefreshToken RefreshToken[]
 }
 
 model PhoneNumber{
@@ -100,4 +101,15 @@ model Vendor{
   // products Product[]
 
   @@map("vendors")
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  expiresAt DateTime
+  revoked   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
