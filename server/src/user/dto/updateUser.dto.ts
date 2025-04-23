@@ -15,18 +15,15 @@ export class UpdateUserDto {
   @IsEmail()
   email?: string;
 
-  @IsString()
-  currentPassword?: string;
+  // @IsString()
+  // currentPassword?: string;
+
+  // @IsOptional()
+  // @IsString()
+  // newPassword?: string;
 
   @IsOptional()
-  @IsString()
-  newPassword?: string;
-
-  @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => UserAddressDto)
-  addresses?: UserAddressDto[];
+  addresses?: UserAddressDto;
 
   @IsOptional()
   updatedAt?: Date;

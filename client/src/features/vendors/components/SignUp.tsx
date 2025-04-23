@@ -47,7 +47,6 @@ export function SignupForm() {
 const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
   const { name, value } = e.target;
   
-  // Check if the field is part of the address
   if (['country', 'city', 'postalCode', 'street','state'].includes(name)) {
       setForm({
           ...form,

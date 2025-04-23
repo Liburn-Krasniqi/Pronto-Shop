@@ -1,14 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import styles from '../auth/Signup.module.css';
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
+
+interface AddressData {
+  country: string;
+  city: string;
+  postalCode: string;
+  street: string;
+  state: string;
+}
 
 interface EditProfileForm {
   firstName: string;
   lastName: string;
   email: string;
-  currentPassword: string;
-  newPassword?: string;
+  // currentPassword: string;
+  // newPassword?: string;
+  addresses: AddressData;
 }
 
 export const EditProfilePage: React.FC = () => {
@@ -17,8 +26,15 @@ export const EditProfilePage: React.FC = () => {
     firstName: '',
     lastName: '',
     email: '',
-    currentPassword: '',
-    newPassword: '',
+    // currentPassword: '',
+    // newPassword: '',
+    addresses: {
+      country: '',
+      city: '',
+      postalCode: '',
+      street: '',
+      state: ''
+    }
   });
 
   const [error, setError] = useState<string | null>(null);
@@ -44,6 +60,19 @@ export const EditProfilePage: React.FC = () => {
           firstName: data.firstName,
           lastName: data.lastName,
           email: data.email,
+          addresses: data.addresses ? {
+            country: data.addresses.country ?? '',
+            city: data.addresses.city ?? '',
+            postalCode: data.addresses.postalCode ?? '',
+            street: data.addresses.street ?? '',
+            state: data.addresses.state ?? ''
+          } : {
+            country: '',
+            city: '',
+            postalCode: '',
+            street: '',
+            state: ''
+          }
         }));
       })
       .catch(err => {
@@ -52,8 +81,23 @@ export const EditProfilePage: React.FC = () => {
       });
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    
+    if (['country', 'city', 'postalCode', 'street','state'].includes(name)) {
+        setForm({
+            ...form,
+            addresses: {
+                ...form.addresses,
+                [name]: value
+            }
+        });
+    } else {
+        setForm({ 
+            ...form, 
+            [name]: value 
+        });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -122,7 +166,67 @@ export const EditProfilePage: React.FC = () => {
               onChange={handleChange}
               required
             />
-            <label>Current Password</label>
+
+            <hr className="my-4" />
+                <h5 className="mb-3">Address Information</h5>
+                  <div className="mb-3">
+                    <label className="form-label">Street</label>
+                    <input
+                        type="text"
+                        name="street"
+                        value={form.addresses.street}
+                        onChange={handleChange}
+                        className="form-control"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label">City</label>
+                    <input
+                      type="text"
+                      name="city"
+                      className="form-control"
+                      value={form.addresses.city}
+                      onChange={handleChange}
+                      
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label">Postal Code</label>
+                    <input
+                      type="text"
+                      name="postalCode"
+                      className="form-control"
+                      value={form.addresses.postalCode}
+                      onChange={handleChange}
+                      
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">State</label>
+                    <input
+                      type="text"
+                      name="state"
+                      className="form-control"
+                      value={form.addresses.state}
+                      onChange={handleChange}
+                      
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Country</label>
+                    <input
+                      type="text"
+                      name="country"
+                      className="form-control"
+                      value={form.addresses.country}
+                      onChange={handleChange}
+                      
+                    />
+                  </div>
+            {/* <hr className="my-4" /> */}
+            {/* <label>Current Password</label>
             <input
               name="currentPassword"
               type="password"
@@ -138,7 +242,7 @@ export const EditProfilePage: React.FC = () => {
               placeholder="Enter new password (optional)"
               value={form.newPassword}
               onChange={handleChange}
-            />
+            /> */}
             <br />
             <button type="submit" className={styles.btt}>Save Changes</button>
           </form>

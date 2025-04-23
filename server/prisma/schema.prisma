@@ -26,7 +26,7 @@ model User {
 
   paymentCards PaymentCard[]
   phoneNumbers PhoneNumber[]
-  addresses UserAddress[]
+  addresses UserAddress?
 
   @@map("users")
   RefreshToken RefreshToken[]
@@ -62,14 +62,14 @@ model PaymentCard{//This is mostly placeholder since payments aren't added yet a
 
 model UserAddress {
   id Int @id @default(autoincrement())
-  userId Int
+  userId Int @unique
   street String?
   city String?
   state String?
   postalCode String?
   country String?
 
-  user User @relation(fields: [userId], references: [id])
+  user User? @relation(fields: [userId], references: [id])
   @@index([userId])
 }
 

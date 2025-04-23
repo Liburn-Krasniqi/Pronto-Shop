@@ -34,14 +34,14 @@ export class UserService{
       }
     
       // Check if CurrentPassword is provided
-      if (!updateData.currentPassword) {
-        throw new Error('Current password is required');
-      }
+      // if (!updateData.currentPassword) {
+      //   throw new Error('Current password is required');
+      // }
     
-      const pwMatches = await argon.verify(user.hash, updateData.currentPassword);
-      if (!pwMatches) {
-        throw new Error('Current password is incorrect');
-      }
+      // const pwMatches = await argon.verify(user.hash, updateData.currentPassword);
+      // if (!pwMatches) {
+      //   throw new Error('Current password is incorrect');
+      // }
     
       const updatePayload: any = {
         updatedAt: new Date(),
@@ -51,9 +51,9 @@ export class UserService{
       if (updateData.lastName) updatePayload.lastName = updateData.lastName;
       if (updateData.email) updatePayload.email = updateData.email;
     
-      if (updateData.newPassword) {
-        updatePayload.hash = await argon.hash(updateData.newPassword);
-      }
+      // if (updateData.newPassword) {
+      //   updatePayload.hash = await argon.hash(updateData.newPassword);
+      // }
 
       if (updateData.addresses) {
         return this.prisma.$transaction(async (tx) => {
@@ -62,8 +62,7 @@ export class UserService{
                 data: updatePayload,
             });
 
-            // Pass empty array if addresses is undefined
-            await this.handleAddressUpdates(tx, userId, updateData.addresses ?? []);
+            await this.handleAddressUpdate(tx, userId, updateData.addresses?? {});
             
             return updatedUser;
         });
@@ -75,49 +74,63 @@ export class UserService{
       });
     }
     
-    private async handleAddressUpdates(
+    private async handleAddressUpdate(
       prisma: Prisma.TransactionClient,
       userId: number,
-      addresses: UserAddressDto[]
+      address: UserAddressDto
     ) {
-      // Get current addresses
-      const currentAddresses = await prisma.userAddress.findMany({
-          where: { userId }
+      // Get current address (assuming one-to-one relationship)
+      const currentAddress = await prisma.userAddress.findFirst({
+        where: { userId }
       });
-  
-      // Determine addresses to delete
-      const addressesToDelete = currentAddresses.filter(
-          ca => !addresses.some(a => a.id === ca.id)
-      );
-  
-      // Process deletions
-      if (addressesToDelete.length > 0) {
-          await prisma.userAddress.deleteMany({
-              where: {
-                  id: { in: addressesToDelete.map(a => a.id) }
-              }
-          });
-      }
-  
-      // Process updates/creations
-      await Promise.all(addresses.map(address => {
-          if (address.id) {
-              return prisma.userAddress.update({
-                  where: { id: address.id },
-                  data: {
-                      street: address.street,
-                      city: address.city,
-                      state: address.state,
-                      postalCode: address.postalCode,
-                      country: address.country
-                  }
-              });
-          } else {
-              return prisma.userAddress.create({
-                  data: this.transformAddressData(address, userId)
-              });
+    
+      // Case 1: Updating existing address
+      if (address.id) {
+        if (!currentAddress) {
+          throw new Error('No existing address found to update');
+        }
+    
+        if (currentAddress.id !== address.id) {
+          throw new Error('Address ID does not match existing address');
+        }
+    
+        return prisma.userAddress.update({
+          where: { id: address.id },
+          data: {
+            street: address.street,
+            city: address.city,
+            state: address.state,
+            postalCode: address.postalCode,
+            country: address.country
           }
-      }));
+        });
+      }
+      
+      // Case 2: Creating new address when none exists
+      if (!currentAddress) {
+        return prisma.userAddress.create({
+          data: {
+            street: address.street,
+            city: address.city,
+            state: address.state,
+            postalCode: address.postalCode,
+            country: address.country,
+            user: { connect: { id: userId } }
+          }
+        });
+      }
+    
+      // Case 3: Updating existing address without ID (full replace)
+      return prisma.userAddress.update({
+        where: { id: currentAddress.id },
+        data: {
+          street: address.street,
+          city: address.city,
+          state: address.state,
+          postalCode: address.postalCode,
+          country: address.country
+        }
+      });
     }
   
     private transformAddressData(address: UserAddressDto, userId: number): Prisma.UserAddressCreateInput {
