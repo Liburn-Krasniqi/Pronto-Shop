@@ -6,6 +6,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { BookmarkModule } from './bookmark/bookmark.module';
 import { LogsModule } from './log/logs.module';
 import { MongoModule } from './mongo';
+import { CategoryModule } from './category/category.module';
+import { SubcategoryModule } from './category copy/subcategory.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { MongoModule } from './mongo';
     UserModule,
     BookmarkModule,
     LogsModule,
+    CategoryModule,
+    SubcategoryModule,
   ],
 })
 export class AppModule {}

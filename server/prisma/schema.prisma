@@ -13,16 +13,38 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Bookmark {
-  id Int @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Product {
+  id          String      @id @default(cuid())
+  name        String
+  description String
+  price       Float
+  images      String[]
+  featured    Boolean     @default(false)
+  stock       Int         @default(0)
+  subcategory    Subcategory  @relation(fields: [subcategoryId], references: [id])
+  subcategoryId  String
+  
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
 
-  title String
-  description String?
-  link String
+model Category {
+  id            String           @id @default(cuid())
+  name          String        @unique
+  description   String?
+  subcategories Subcategory[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
 
-  userId Int
+model Subcategory {
+  id          String       @id @default(cuid())
+  name        String
+  description String
+  categoryId  String
+  category    Category  @relation(fields: [categoryId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  products Product[]
 
-  @@map("bookmarks")
 }
