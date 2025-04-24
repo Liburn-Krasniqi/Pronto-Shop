@@ -24,8 +24,6 @@ export class UpdateVendorDto{
     phone_number?: string
 
     @IsOptional()
-    @IsArray()
-    @ValidateNested({ each: true })
     @Type(() => VendorAddressDto)
-    addresses?: VendorAddressDto[];
+    addresses?: VendorAddressDto;
 }

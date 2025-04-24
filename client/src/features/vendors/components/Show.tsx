@@ -17,7 +17,7 @@ interface Vendor {
   email: string;
   businessName: string;
   phone_number: string;
-  addresses: AddressData[];
+  addresses: AddressData;
 }
 
 export function ShowVendor() {
@@ -82,11 +82,11 @@ export function ShowVendor() {
                 <td>{vendor.businessName}</td>
                 <td>{vendor.email}</td>
                 <td>{vendor.phone_number}</td>
-                <td>{vendor.addresses[0]?.street}</td>
-                <td>{vendor.addresses[0]?.city}</td>
-                <td>{vendor.addresses[0]?.postalCode}</td>
-                <td>{vendor.addresses[0]?.state}</td>
-                <td>{vendor.addresses[0]?.country}</td>
+                <td>{vendor.addresses.street}</td>
+                <td>{vendor.addresses.city}</td>
+                <td>{vendor.addresses.postalCode}</td>
+                <td>{vendor.addresses.state}</td>
+                <td>{vendor.addresses.country}</td>
                 <td>
                   <button className="btn btn-sm btn-primary me-2" onClick={() => handleEdit(vendor.id)}>
                     Edit

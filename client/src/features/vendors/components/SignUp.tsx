@@ -175,7 +175,7 @@ const handleSubmit = async (e: FormEvent) => {
 
 
                 <hr className="my-4" />
-                <h5 className="mb-3">Address Information</h5>
+                <h5 className="mb-3">Address Information (Optional)</h5>
 
                 <div className="row">
                   <div className="mb-3 col-md-6">
@@ -185,7 +185,6 @@ const handleSubmit = async (e: FormEvent) => {
                         name="street"
                         value={form.address.street}
                         onChange={handleChange}
-                        required
                         className="form-control"
                     />
                   </div>
@@ -198,7 +197,7 @@ const handleSubmit = async (e: FormEvent) => {
                       className="form-control"
                       value={form.address.city}
                       onChange={handleChange}
-                      required
+                      
                     />
                   </div>
 
@@ -210,7 +209,7 @@ const handleSubmit = async (e: FormEvent) => {
                       className="form-control"
                       value={form.address.postalCode}
                       onChange={handleChange}
-                      required
+                      
                     />
                   </div>
                 </div>
@@ -224,7 +223,7 @@ const handleSubmit = async (e: FormEvent) => {
                       className="form-control"
                       value={form.address.state}
                       onChange={handleChange}
-                      required
+                      
                     />
                   </div>
                   <div className="col-md-6 mb-3">
@@ -235,7 +234,7 @@ const handleSubmit = async (e: FormEvent) => {
                       className="form-control"
                       value={form.address.country}
                       onChange={handleChange}
-                      required
+                      
                     />
                   </div>
                 </div>

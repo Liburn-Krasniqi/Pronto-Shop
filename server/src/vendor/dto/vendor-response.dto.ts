@@ -20,20 +20,17 @@ export class VendorResponseDto {
   phone_number: string;
 
   @ApiProperty({ 
-    type: [VendorAddressDto],
+    type: VendorAddressDto,
     description: 'Array of vendor addresses',
-    example: [{
+    example: {
       street: '123 Main St',
       city: 'New York',
       state: 'NY',
       postalCode: '10001',
       country: 'USA'
-    }]
+    }
   })
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => VendorAddressDto)
-  addresses?: VendorAddressDto[];
+  addresses?: VendorAddressDto;
 
   @ApiProperty({ example: '2025-04-08T12:00:00.000Z', description: 'Date when the vendor was created' })
   createdAt: Date;

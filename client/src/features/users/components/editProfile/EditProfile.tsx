@@ -168,7 +168,7 @@ export const EditProfilePage: React.FC = () => {
             />
 
             <hr className="my-4" />
-                <h5 className="mb-3">Address Information</h5>
+                <h5 className="mb-3">Address Information (Optional)</h5>
                   <div className="mb-3">
                     <label className="form-label">Street</label>
                     <input

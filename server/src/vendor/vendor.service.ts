@@ -62,8 +62,13 @@ export class VendorService{
         };
     }
 
-    async findById(id: number){
-        return this.prisma.vendor.findUnique({where : {id}})
+    async findById(id: number) {
+        return this.prisma.vendor.findUnique({
+          where: { id },
+          include: {
+            addresses: true
+          }
+        });
     }
 
     async update(vendorId: number, dto: UpdateVendorDto) {
@@ -99,53 +104,40 @@ export class VendorService{
     private async handleVendorAddressUpdates(
         prisma: Prisma.TransactionClient,
         vendorId: number,
-        addresses: VendorAddressDto[]
+        address: VendorAddressDto
     ) {
-
-        const currentAddresses = await prisma.vendorAddress.findMany({
+        // Find existing address for this vendor
+        const existingAddress = await prisma.vendorAddress.findFirst({
             where: { vendorId }
         });
-
-        const addressesToDelete = currentAddresses.filter(
-            ca => !addresses.some(a => a.id === ca.id)
-        );
     
-        if (addressesToDelete.length > 0) {
-            await prisma.vendorAddress.deleteMany({
-                where: {
-                    id: { in: addressesToDelete.map(a => a.id) }
+        if (existingAddress) {
+            // Update existing address
+            return prisma.vendorAddress.update({
+                where: { id: existingAddress.id },
+                data: {
+                    street: address.street,
+                    city: address.city,
+                    state: address.state,
+                    postalCode: address.postalCode,
+                    country: address.country
+                }
+            });
+        } else {
+            // Create new address if none exists
+            return prisma.vendorAddress.create({
+                data: {
+                    street: address.street,
+                    city: address.city,
+                    state: address.state,
+                    postalCode: address.postalCode,
+                    country: address.country,
+                    vendor: {
+                        connect: { id: vendorId }
+                    }
                 }
             });
         }
-    
-        await Promise.all(addresses.map(address => {
-            if (address.id) {
-
-                return prisma.vendorAddress.update({
-                    where: { id: address.id },
-                    data: {
-                        street: address.street,
-                        city: address.city,
-                        state: address.state,
-                        postalCode: address.postalCode,
-                        country: address.country
-                    }
-                });
-            } else {
-                return prisma.vendorAddress.create({
-                    data: {
-                        street: address.street,
-                        city: address.city,
-                        state: address.state,
-                        postalCode: address.postalCode,
-                        country: address.country,
-                        vendor: {
-                            connect: { id: vendorId }
-                        }
-                    }
-                });
-            }
-        }));
     }
 
     async delete(vendorId: number) {

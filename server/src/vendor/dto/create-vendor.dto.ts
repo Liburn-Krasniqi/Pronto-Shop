@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsEmail, isNotEmpty, IsNotEmpty, IsObject, IsOptional, isString, IsString, ValidateNested } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { VendorAddressDto } from './vendorAddress.dto';
 
 export class CreateVendorDto{
@@ -24,7 +24,6 @@ export class CreateVendorDto{
     phone_number: string
 
     @IsOptional()
-    @ValidateNested()
     @Type(() => VendorAddressDto)
     address?: VendorAddressDto;
 }
