@@ -11,14 +11,12 @@ export class AuthController{
 
     @Post('signup')
     signup(@Body() dto: SignUpDto){
-        console.log(dto);
         return this.authService.signup(dto);
     }
 
     @HttpCode(HttpStatus.OK)
-    @Post('signin')
+    @Post('login')
     signin(@Body() dto: SignInDto){
-        // console.log(dto);
         return this.authService.signin(dto); 
     }
     
@@ -27,7 +25,6 @@ export class AuthController{
     async refreshToken(@Req() req: Request) {
         const user = req.user as { sub: number; email: string; refreshToken: string };
         
-        // Generate new tokens
         const tokens = await this.authService.refreshTokens(user.sub, user.email, user.refreshToken);
         
         return tokens;

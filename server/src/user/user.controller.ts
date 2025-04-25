@@ -23,7 +23,7 @@ import { UpdateUserDto } from './dto/updateUser.dto';
 import { PrismaService } from '../prisma/prisma.service';
 
 @ApiTags('Users')
-@ApiBearerAuth() // adds "Authorize" button for JWT token
+@ApiBearerAuth()
 @UseGuards(JwtGuard)
 @Controller('users')
 export class UserController {

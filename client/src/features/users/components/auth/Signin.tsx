@@ -1,19 +1,12 @@
 import React, { useState } from 'react';
 import styles from './Signup.module.css';
 import { useNavigate } from 'react-router-dom';
-import Cookies from 'js-cookie';
+import { login } from '../../../../utils/auth';
 
 
 interface SigninFormData {
   email: string;
   password: string;
-}
-
-interface User {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
 }
 
 export const SigninPage: React.FC = () => {
@@ -25,7 +18,7 @@ export const SigninPage: React.FC = () => {
 
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({
@@ -37,43 +30,19 @@ export const SigninPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setSuccess(null);
+    setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:3333/auth/signin', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(form),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.message || 'Sign in failed');
-      } else {
-        setSuccess('Signed in!');
-        Cookies.set('access_token', data.access_token);
-        navigate('/profilePage')
-
-        const profileRes = await fetch('http://localhost:3333/users/me', {
-          headers: {
-            Authorization: `Bearer ${data.access_token}`,
-          },
-        });
-
-        const profile = await profileRes.json();
-
-        if (profileRes.ok) {
-          setUser(profile);
-        } else {
-          setError('Could not fetch user info');
-        }
-      }
+      // Use the centralized login function
+      await login(form.email, form.password);
+      
+      // Redirect to profile page after successful login
+      navigate('/profilePage');
     } catch (err: any) {
-      setError('Something went wrong. Please try again. ' + err.message);
+      setError(err.message || 'Something went wrong. Please try again.');
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -107,7 +76,9 @@ export const SigninPage: React.FC = () => {
                 required
               />
               <br />
-              <button type="submit" className={styles.btt}>Sign In</button>
+              <button type="submit" disabled={loading} className={styles.btt}>
+                {loading ? 'Signing in...' : 'Sign In'}
+              </button>
             </form>
             {error && <p style={{ color: 'red' }}>{error}</p>}
             {success && <p style={{ color: 'green' }}>{success}</p>}

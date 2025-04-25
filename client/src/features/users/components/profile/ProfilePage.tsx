@@ -1,83 +1,33 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Profile.module.css';
-import Cookies from 'js-cookie';
-
-interface User {
-  id: number;
-  firstName: string;
-  lastName: string;
-  email: string;
-}
+import { useAuth } from '../../../../hooks/useAuth';
+import { apiClient } from '../../../../api/client';
 
 export const ProfilePage: React.FC = () => {
-  const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { isAuthenticated, loading, userData } = useAuth();
 
   const profileEditPage = () => {
-    navigate('/EditProfilePage');
+    navigate('/editProfilePage');
   };
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      const token = Cookies.get('access_token');
-      if (!token) {
-        setError('You are not authorized. Please log in.');
-        return;
-      }
-
-      try {
-        const res = await fetch('http://localhost:3333/users/me', {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (res.ok) {
-          const data = await res.json();
-          setUser(data);
-        } else {
-          setError('Failed to fetch user data.');
-        }
-      } catch (err: any) {
-        setError('Something went wrong. Please try again.');
-        console.error(err);
-      }
-    };
-
-    fetchUser();
-  }, []);
 
   const handleDeleteProfile = async () => {
-    const token = Cookies.get('access_token');
-    if (!token) {
-      setError('You are not authorized to delete this profile.');
-      return;
-    }
-
+    setError(null);
+    
     try {
-      const res = await fetch('http://localhost:3333/users/me', {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (res.ok) {
-        Cookies.remove('access_token');
-        navigate('/signin');
-      } else {
-        setError('Failed to delete profile.');
-      }
+      await apiClient.delete('/users/me');
+      setSuccess('Profile deleted successfully!');
+      setTimeout(() => navigate('/login'), 1500);
     } catch (err: any) {
-      setError('Something went wrong. Please try again.');
-      console.error(err);
+      setError(err.message || 'Failed to delete profile.');
     }
   };
+
+  if (loading) return <div>Loading...</div>;
+  if (!isAuthenticated) return <div>Redirecting to login...</div>;
 
   return (
     <div className={styles.container}>
@@ -86,14 +36,26 @@ export const ProfilePage: React.FC = () => {
       </div>
 
       {error && <p className={styles.errorMessage}>{error}</p>}
+      {success && <div className="success-message">{success}</div>}
 
-      {user ? (
+      {userData ? (
         <div className={styles.userCard}>
           <div className={styles.userInfo}>
-            <p><strong>First Name:</strong> {user.firstName}</p>
-            <p><strong>Last Name:</strong> {user.lastName}</p>
-            <p><strong>Email:</strong> {user.email}</p>
+            <p><strong>First Name:</strong> {userData.firstName}</p>
+            <p><strong>Last Name:</strong> {userData.lastName}</p>
+            <p><strong>Email:</strong> {userData.email}</p>
           </div>
+
+          {userData.addresses && (
+            <div className="address-info">
+              <h3>Address</h3>
+              <p><strong>Street:</strong> {userData.addresses.street}</p>
+              <p><strong>City:</strong> {userData.addresses.city}</p>
+              <p><strong>State:</strong> {userData.addresses.state}</p>
+              <p><strong>Postal Code:</strong> {userData.addresses.postalCode}</p>
+              <p><strong>Country:</strong> {userData.addresses.country}</p>
+            </div>
+          )}
 
           <div className={styles.buttonContainer}>
             <button
