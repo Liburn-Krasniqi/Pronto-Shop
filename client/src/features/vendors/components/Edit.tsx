@@ -232,10 +232,10 @@ export function EditVendor() {
                   </div>
 
                   <div className="mb-3 col-md-3">
-                    <label className="form-label">Zip Code</label>
+                    <label className="form-label">Postal Code</label>
                     <input
                       type="text"
-                      name="zipCode"
+                      name="postalCode"
                       className="form-control"
                       value={form.addresses.postalCode}
                       onChange={handleChange}
