@@ -99,7 +99,7 @@ export class AuthService{
           this.jwt.signAsync(
             payload,
             {
-              expiresIn: '1m',
+              expiresIn: '30m',
               secret: secret
             }
           ),
