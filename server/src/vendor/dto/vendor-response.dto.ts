@@ -1,4 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { VendorAddressDto } from './vendorAddress.dto';
+import { IsArray, IsOptional, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class VendorResponseDto {
   @ApiProperty({ example: '1', description: 'Unique identifier of the vendor' })
@@ -16,17 +19,18 @@ export class VendorResponseDto {
   @ApiProperty({ example: '+1-234-567-8901', description: 'Vendor contact phone number' })
   phone_number: string;
 
-  @ApiProperty({ example: 'USA', description: 'Country where the vendor is located' })
-  country: string;
-
-  @ApiProperty({ example: 'New York', description: 'City where the vendor is located' })
-  city: string;
-
-  @ApiProperty({ example: '10001', description: 'Postal code of the vendor’s address' })
-  zipCode: string;
-
-  @ApiProperty({ example: '123 Main St', description: 'Street address of the vendor' })
-  street: string;
+  @ApiProperty({ 
+    type: VendorAddressDto,
+    description: 'Array of vendor addresses',
+    example: {
+      street: '123 Main St',
+      city: 'New York',
+      state: 'NY',
+      postalCode: '10001',
+      country: 'USA'
+    }
+  })
+  addresses?: VendorAddressDto;
 
   @ApiProperty({ example: '2025-04-08T12:00:00.000Z', description: 'Date when the vendor was created' })
   createdAt: Date;

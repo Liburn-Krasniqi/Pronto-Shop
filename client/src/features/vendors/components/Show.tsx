@@ -2,16 +2,22 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+interface AddressData {
+  id: number;
+  country: string;
+  city: string;
+  postalCode: string;
+  street: string;
+  state: string;
+}
+
 interface Vendor {
   id: number;
   name: string;
   email: string;
   businessName: string;
   phone_number: string;
-  country: string;
-  city: string;
-  zipCode: string;
-  street: string;
+  addresses: AddressData;
 }
 
 export function ShowVendor() {
@@ -62,7 +68,8 @@ export function ShowVendor() {
               <th>Phone Number</th>
               <th>Street</th>
               <th>City</th>
-              <th>Zip Code</th>
+              <th>Postal Code</th>
+              <th>State</th>
               <th>Country</th>
               <th>Actions</th>
             </tr>
@@ -75,18 +82,19 @@ export function ShowVendor() {
                 <td>{vendor.businessName}</td>
                 <td>{vendor.email}</td>
                 <td>{vendor.phone_number}</td>
-                <td>{vendor.street}</td>
-                <td>{vendor.city}</td>
-                <td>{vendor.zipCode}</td>
-                <td>{vendor.country}</td>
+                <td>{vendor.addresses.street}</td>
+                <td>{vendor.addresses.city}</td>
+                <td>{vendor.addresses.postalCode}</td>
+                <td>{vendor.addresses.state}</td>
+                <td>{vendor.addresses.country}</td>
                 <td>
-        <button className="btn btn-sm btn-primary me-2" onClick={() => handleEdit(vendor.id)}>
-          Edit
-        </button>
-        <button className="btn btn-sm btn-danger" onClick={() => handleDelete(vendor.id)}>
-          Delete
-        </button>
-      </td>
+                  <button className="btn btn-sm btn-primary me-2" onClick={() => handleEdit(vendor.id)}>
+                    Edit
+                  </button>
+                  <button className="btn btn-sm btn-danger" onClick={() => handleDelete(vendor.id)}>
+                    Delete
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>

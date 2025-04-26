@@ -3,16 +3,21 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+interface AddressData {
+  country: string;
+  city: string;
+  postalCode: string;
+  street: string;
+  state: string;
+}
+
 interface VendorFormData {
   name: string;
   email: string;
   password: string;
   businessName: string;
   phone_number: string;
-  country: string;
-  city: string;
-  zipCode: string;
-  street: string;
+  addresses: AddressData;
 }
 
 interface Message {
@@ -30,10 +35,13 @@ export function EditVendor() {
     password: '',
     businessName: '',
     phone_number: '',
-    country: '',
-    city: '',
-    zipCode: '',
-    street: ''
+    addresses: {
+      country: '',
+      city: '',
+      postalCode: '',
+      street: '',
+      state: ''
+    }
   });
 
   const [message, setMessage] = useState<Message | null>(null);
@@ -49,30 +57,57 @@ export function EditVendor() {
           password: '', // do not prefill password
           businessName: data.businessName || '',
           phone_number: data.phone_number || '',
-          country: data.country || '',
-          city: data.city || '',
-          zipCode: data.zipCode || '',
-          street: data.street || '',
+          addresses: data.addresses ? {
+            country: data.addresses.country ?? '',
+            city: data.addresses.city ?? '',
+            postalCode: data.addresses.postalCode ?? '',
+            street: data.addresses.street ?? '',
+            state: data.addresses.state ?? ''
+          } : {
+            country: '',
+            city: '',
+            postalCode: '',
+            street: '',
+            state: ''
+          }
         });
       })
-      .catch(err => {
+      .catch(() => {
         setMessage({ type: 'danger', text: 'Failed to load vendor data.' });
       });
   }, [id]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    
+    if (['country', 'city', 'postalCode', 'street','state'].includes(name)) {
+        setForm({
+            ...form,
+            addresses: {
+                ...form.addresses,
+                [name]: value
+            }
+        });
+    } else {
+        setForm({ 
+            ...form, 
+            [name]: value 
+        });
+    }
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    const payload = {
+    const payload: VendorFormData = {
       ...form,
-        country: form.country,
-        city: form.city,
-        zipCode: form.zipCode,
-        street: form.street
+      addresses: {
+        country: form.addresses.country,
+        city: form.addresses.city,
+        postalCode: form.addresses.postalCode,
+        street: form.addresses.street,
+        state: form.addresses.state || '' // handle optional state if needed
+      }
     };
 
     try {
@@ -169,7 +204,7 @@ export function EditVendor() {
                 </div>
 
                 <hr className="my-4" />
-                <h5 className="mb-3">Address Information</h5>
+                <h5 className="mb-3">Address Information (Optional)</h5>
 
                 <div className="row">
                   <div className="mb-3 col-md-6">
@@ -178,9 +213,9 @@ export function EditVendor() {
                       type="text"
                       name="street"
                       className="form-control"
-                      value={form.street}
+                      value={form.addresses.street}
                       onChange={handleChange}
-                      required
+                      
                     />
                   </div>
 
@@ -190,35 +225,46 @@ export function EditVendor() {
                       type="text"
                       name="city"
                       className="form-control"
-                      value={form.city}
+                      value={form.addresses.city}
                       onChange={handleChange}
-                      required
+                      
                     />
                   </div>
 
                   <div className="mb-3 col-md-3">
-                    <label className="form-label">Zip Code</label>
+                    <label className="form-label">Postal Code</label>
                     <input
                       type="text"
-                      name="zipCode"
+                      name="postalCode"
                       className="form-control"
-                      value={form.zipCode}
+                      value={form.addresses.postalCode}
                       onChange={handleChange}
-                      required
+                      
                     />
                   </div>
                 </div>
 
-                <div className="mb-3">
-                  <label className="form-label">Country</label>
-                  <input
-                    type="text"
-                    name="country"
-                    className="form-control"
-                    value={form.country}
-                    onChange={handleChange}
-                    required
-                  />
+                <div className="row mb-3">
+                  <div className="col-md-6">
+                    <label className="form-label">State</label>
+                    <input
+                      type="text"
+                      name="state"
+                      className="form-control"
+                      value={form.addresses.state}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="col-md-6">
+                    <label className="form-label">Country</label>
+                    <input
+                      type="text"
+                      name="country"
+                      className="form-control"
+                      value={form.addresses.country}
+                      onChange={handleChange}
+                    />
+                  </div>
                 </div>
 
                 <button type="submit" className="w-100 background-2 rounded p-2 text-white border-0 mt-2">

@@ -7,6 +7,11 @@ import { EditProfilePage } from "../../features/users/components/editProfile";
 import { SignupForm } from "../../features/vendors/components/SignUp";
 import { ShowVendor } from "../../features/vendors/components/Show";
 import { EditVendor } from "../../features/vendors/components/Edit";
+import withAuth from "../../components/auth/withAuth";
+
+
+const ProtectedEditProfile = withAuth(EditProfilePage);
+const ProtectedProfilePage = withAuth(ProfilePage);
 
 export function AppRoutes() {
   return (
@@ -14,9 +19,9 @@ export function AppRoutes() {
       <Route path="/" element={<Layout />}>
         <Route index element={<LandingPage />} />
         <Route path="signup" element={<SignupPage />} />
-        <Route path="signin" element={<SigninPage />} />
-        <Route path="ProfilePage" element={<ProfilePage />} />
-        <Route path="EditProfilePage" element={<EditProfilePage />} />
+        <Route path="login" element={<SigninPage />} />
+        <Route path="profilePage" element={<ProtectedProfilePage />} />
+        <Route path="editProfilePage" element={<ProtectedEditProfile />} />
         <Route path="vendor/signup" element={<SignupForm />} />
         <Route path="vendor/show" element={<ShowVendor />} />
         <Route path="vendor/edit/:id" element={<EditVendor />} />

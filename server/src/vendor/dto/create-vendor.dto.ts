@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
-import { IsEmail, isNotEmpty, IsNotEmpty, IsObject, isString, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { VendorAddressDto } from './vendorAddress.dto';
 
 export class CreateVendorDto{
     @IsEmail()
@@ -22,19 +23,7 @@ export class CreateVendorDto{
     @IsString()
     phone_number: string
 
-    @IsNotEmpty()
-    @IsString()
-    country: string
-
-    @IsNotEmpty()
-    @IsString()
-    city: string
-
-    @IsNotEmpty()
-    @IsString()
-    zipCode: string
-
-    @IsNotEmpty()
-    @IsString()
-    street: string
+    @IsOptional()
+    @Type(() => VendorAddressDto)
+    address?: VendorAddressDto;
 }

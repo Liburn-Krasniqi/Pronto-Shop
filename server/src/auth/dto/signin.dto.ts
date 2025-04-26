@@ -1,6 +1,5 @@
-import { Type } from 'class-transformer';
-import { IsEmail, IsNotEmpty, IsObject, IsString, ValidateNested } from 'class-validator';
-import { AddressDto } from 'src/user/dto/address.dto';
+import { IsEmail, IsString } from 'class-validator';
+
 
 export class SignInDto {
     @IsEmail()

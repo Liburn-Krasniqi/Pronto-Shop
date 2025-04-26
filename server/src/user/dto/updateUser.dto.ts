@@ -1,4 +1,6 @@
-import { IsOptional, IsString, IsEmail, isStrongPassword } from 'class-validator';
+import { IsOptional, IsString, IsEmail, isStrongPassword, IsArray, ValidateNested } from 'class-validator';
+import { UserAddressDto } from './userAddress.dto';
+import { Type } from 'class-transformer';
 
 export class UpdateUserDto {
   @IsOptional()
@@ -13,12 +15,15 @@ export class UpdateUserDto {
   @IsEmail()
   email?: string;
 
-  @IsString()
-  currentPassword?: string;
+  // @IsString()
+  // currentPassword?: string;
+
+  // @IsOptional()
+  // @IsString()
+  // newPassword?: string;
 
   @IsOptional()
-  @IsString()
-  newPassword?: string;
+  addresses?: UserAddressDto;
 
   @IsOptional()
   updatedAt?: Date;

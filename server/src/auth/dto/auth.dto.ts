@@ -7,7 +7,7 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { AddressDto } from 'src/user/dto/address.dto';
+import { UserAddressDto } from 'src/user/dto/userAddress.dto';
 
 export class AuthDto {
   @ApiProperty()
@@ -33,6 +33,6 @@ export class AuthDto {
   @ApiProperty()
   @IsObject()
   @ValidateNested()
-  @Type(() => AddressDto)
-  address: AddressDto;
+  @Type(() => UserAddressDto)
+  address: UserAddressDto;
 }

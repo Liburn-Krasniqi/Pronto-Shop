@@ -3,16 +3,21 @@ import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Link } from 'react-router-dom';
 
+interface AddressData {
+  country: string;
+  city: string;
+  postalCode: string;
+  street: string;
+  state: string;
+}
+
 interface SignupFormData {
   name: string;
   email: string;
   password: string;
   businessName: string;
   phone_number: string;
-  country: string;
-  city: string;
-  zipCode: string;
-  street: string;
+  address: AddressData;
 }
 
 interface Message {
@@ -27,52 +32,63 @@ export function SignupForm() {
     password: '',
     businessName: '',
     phone_number: '',
-    country: '',
-    city: '',
-    zipCode: '',
-    street: ''
+    address: {
+        country: '',
+        city: '',
+        postalCode: '',
+        street: '',
+        state: ''
+    }
   });
 
   const [message, setMessage] = useState<Message | null>(null);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  
+const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const { name, value } = e.target;
+  
+  if (['country', 'city', 'postalCode', 'street','state'].includes(name)) {
+      setForm({
+          ...form,
+          address: {
+              ...form.address,
+              [name]: value
+          }
+      });
+  } else {
+      setForm({ 
+          ...form, 
+          [name]: value 
+      });
+  }
+};
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+const handleSubmit = async (e: FormEvent) => {
+  e.preventDefault();
 
-    const payload = {
-      ...form,
-      address: {
-        country: form.country,
-        city: form.city,
-        zipCode: form.zipCode,
-        street: form.street,
-      },
-    };
-
-    try {
-      const res = await axios.post('http://localhost:3333/vendor/signup', payload);
+  try {
+      const res = await axios.post('http://localhost:3333/vendor/signup', form);
       setMessage({ type: 'success', text: `Welcome, ${res.data.name}! 🎉` });
       setForm({
-        name: '',
-        email: '',
-        password: '',
-        businessName: '',
-        phone_number: '',
-        country: '',
-        city: '',
-        zipCode: '',
-        street: ''
+          name: '',
+          email: '',
+          password: '',
+          businessName: '',
+          phone_number: '',
+          address: {
+              country: '',
+              city: '',
+              postalCode: '',
+              street: '',
+              state: ''
+          }
       });
       
-      
-    } catch (err: any) {
+  } catch (err: any) {
       const errorText = err.response?.data?.message || err.message;
       setMessage({ type: 'danger', text: `Signup failed: ${errorText}` });
-    }
-  };
+  }
+};
 
   return (
 
@@ -159,18 +175,17 @@ export function SignupForm() {
 
 
                 <hr className="my-4" />
-                <h5 className="mb-3">Address Information</h5>
+                <h5 className="mb-3">Address Information (Optional)</h5>
 
                 <div className="row">
                   <div className="mb-3 col-md-6">
                     <label className="form-label">Street</label>
                     <input
-                      type="text"
-                      name="street"
-                      className="form-control"
-                      value={form.street}
-                      onChange={handleChange}
-                      required
+                        type="text"
+                        name="street"
+                        value={form.address.street}
+                        onChange={handleChange}
+                        className="form-control"
                     />
                   </div>
 
@@ -180,35 +195,48 @@ export function SignupForm() {
                       type="text"
                       name="city"
                       className="form-control"
-                      value={form.city}
+                      value={form.address.city}
                       onChange={handleChange}
-                      required
+                      
                     />
                   </div>
 
                   <div className="mb-3 col-md-3">
-                    <label className="form-label">Zip Code</label>
+                    <label className="form-label">Postal Code</label>
                     <input
                       type="text"
-                      name="zipCode"
+                      name="postalCode"
                       className="form-control"
-                      value={form.zipCode}
+                      value={form.address.postalCode}
                       onChange={handleChange}
-                      required
+                      
                     />
                   </div>
                 </div>
 
-                <div className="mb-3">
-                  <label className="form-label">Country</label>
-                  <input
-                    type="text"
-                    name="country"
-                    className="form-control"
-                    value={form.country}
-                    onChange={handleChange}
-                    required
-                  />
+                <div className='row'>
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">State</label>
+                    <input
+                      type="text"
+                      name="state"
+                      className="form-control"
+                      value={form.address.state}
+                      onChange={handleChange}
+                      
+                    />
+                  </div>
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">Country</label>
+                    <input
+                      type="text"
+                      name="country"
+                      className="form-control"
+                      value={form.address.country}
+                      onChange={handleChange}
+                      
+                    />
+                  </div>
                 </div>
 
                 <button type="submit" className="w-100 background-2 rounded p-2 text-white border-0 mt-2">

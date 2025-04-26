@@ -58,7 +58,7 @@ export const SignupPage: React.FC = () => {
       } else {
         Cookies.set('token', data.access_token, { expires: 1 / 24 }); 
         setSuccess('Signup successful!');
-        navigate('/signin')
+        navigate('/login')
         setForm({
           fullName: '',
           email: '',
