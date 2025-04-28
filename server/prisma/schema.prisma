@@ -113,3 +113,24 @@ model RefreshToken {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+
+model Category{
+  id Int @id @default(autoincrement())
+  name String @unique
+  description String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  subcategories Subcategory[]
+}
+
+model Subcategory{
+  id Int @id @default(autoincrement())
+  name String @unique
+  description String
+  categoryId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt 
+  category Category @relation(fields: [categoryId], references: [id])
+  // products Product[]
+}

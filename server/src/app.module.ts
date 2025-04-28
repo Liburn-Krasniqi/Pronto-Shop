@@ -6,6 +6,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { VendorModule } from './vendor/vendor.module';
 import { LogsModule } from './log/logs.module';
 import { MongoModule } from './mongo';
+import { CategoryModule } from './category/category.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { MongoModule } from './mongo';
     UserModule,
     VendorModule,
     LogsModule,
+    CategoryModule,
   ],
 })
 export class AppModule {}
