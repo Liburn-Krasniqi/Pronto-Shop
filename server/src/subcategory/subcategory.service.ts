@@ -8,20 +8,22 @@ export class SubcategoryService{
 
     async findAll(){
         return this.prisma.subcategory.findMany(
-        //     {
-        //     include : {
-        //         products: true
-        //     }
-        // }
+            {
+            include : {
+                // products: true,
+                category: true
+            }
+        }
         )
     }
 
     async findById(id: number){
         return this.prisma.subcategory.findUnique({
-            where: {id}
-            // include: {
-            //     products: true
-            // }
+            where: {id},
+            include: {
+                // products: true,
+                category: true
+            }
         })
     }
 

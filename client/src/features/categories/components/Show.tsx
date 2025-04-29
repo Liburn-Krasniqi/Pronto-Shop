@@ -2,15 +2,23 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
+interface Subcategory{
+    id: number;
+    name: string;
+    description: string
+}
+
 interface Category {
     id: number;
     name: string;
     description: string;
+    subcategories: Subcategory[]
 }
 
 export function ShowCategory(){
     const [categories, setCategories] = useState<Category[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate()
 
     useEffect(() => {
         axios.get('http://localhost:3333/category')
@@ -21,8 +29,7 @@ export function ShowCategory(){
                 setError(err.message || 'Failed to fetch categories')
             })
     } , [])
-
-    const navigate = useNavigate()
+    
 
     const handleEdit = async(id:number) => {
         navigate(`/category/edit/${id}`)
@@ -53,6 +60,7 @@ export function ShowCategory(){
               <th>ID</th>
               <th>Name</th>
               <th>Description</th>
+              <th>Subcategories</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -62,6 +70,17 @@ export function ShowCategory(){
                 <td>{category.id}</td>
                 <td>{category.name}</td>
                 <td>{category.description}</td>
+                <td>
+                  {category.subcategories.length > 0 ? (
+                    <ul className="mb-0 ps-3">
+                      {category.subcategories.map((sub) => (
+                          <li key={sub.id}>{sub.name}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <em>No Subcategories</em>
+                  )}
+                </td>
                 <td>
                   <button className="btn btn-sm btn-primary me-2" onClick={() => handleEdit(category.id)}>
                     Edit

@@ -88,7 +88,6 @@ export function CreateCategory(){
                             value={form.description}
                             onChange={handleChange}
                             rows={4}
-                            required
                         />
                         </div>
                         <button type="submit" className="w-100 background-2 rounded p-2 text-white border-0 mt-2">

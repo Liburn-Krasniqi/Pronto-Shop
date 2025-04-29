@@ -8,6 +8,7 @@ import { VendorSignupForm } from "../../features/vendors/components/SignUp";
 import { ShowVendor } from "../../features/vendors/components/Show";
 import { EditVendor } from "../../features/vendors/components/Edit";
 import { CreateCategory, ShowCategory, EditCategory } from "../../features/categories/components/index";
+import { CreateSubcategory, EditSubcategory, ShowSubcategories} from "../../features/subcategories/components/index";
 import withAuth from "../../components/auth/withAuth";
 
 
@@ -29,6 +30,9 @@ export function AppRoutes() {
         <Route path="category/create" element={<CreateCategory />} />
         <Route path="category/show" element={<ShowCategory />} />
         <Route path="category/edit/:id" element={<EditCategory />} />
+        <Route path="subcategory/create" element={<CreateSubcategory />} />
+        <Route path="subcategory/show" element={<ShowSubcategories />} />
+        <Route path="subcategory/edit/:id" element={<EditSubcategory />} />
       </Route>
     </Routes>
   );
