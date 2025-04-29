@@ -49,7 +49,7 @@ export function ShowCategory(){
 
     return(
         <div className="container mt-5">
-      <h2 className="mb-4 text-center">All Registered Businesses</h2>
+      <h2 className="mb-4 text-center color-1">Categories List</h2>
 
       {error && <div className="alert alert-danger">{error}</div>}
 
