@@ -25,7 +25,7 @@ interface Message {
   text: string;
 }
 
-export function SignupForm() {
+export function VendorSignupForm() {
   const [form, setForm] = useState<SignupFormData>({
     name: '',
     email: '',

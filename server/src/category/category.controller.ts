@@ -67,6 +67,10 @@ export class CategoryController{
     }
 
     @Delete(':id')
+    @ApiOperation({ summary: 'Delete Category by ID' })
+    @ApiParam({ name: 'id', type: Number })
+    @ApiResponse({ status: 200, description: 'Category deleted successfully' })
+    @ApiResponse({ status: 404, description: 'Category not found' })
     delete(@Param('id') id: number){
         return this.categoryService.delete(Number(id));
     }
