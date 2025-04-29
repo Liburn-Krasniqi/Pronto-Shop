@@ -7,6 +7,7 @@ import { VendorModule } from './vendor/vendor.module';
 import { LogsModule } from './log/logs.module';
 import { MongoModule } from './mongo';
 import { CategoryModule } from './category/category.module';
+import { SubcategoryModule } from './subcategory/subcategory.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { CategoryModule } from './category/category.module';
     VendorModule,
     LogsModule,
     CategoryModule,
+    SubcategoryModule,
   ],
 })
 export class AppModule {}

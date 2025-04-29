@@ -37,13 +37,13 @@ export class CategoryController{
             description: 'Category found',
             type: CategoryResponseDto
         })
-        @ApiResponse({ status: 404, description: 'Vendor not found' })
+        @ApiResponse({ status: 404, description: 'Subcategory not found' })
         findById(@Param('id') id: number) {
             return this.categoryService.findById(Number(id));
         }
 
     @Post('create')
-    @ApiOperation({ summary: 'Sign up a new Vendor' })
+    @ApiOperation({ summary: 'Create a new Category' })
         @ApiBody({ type: CategoryResponseDto })
         @ApiResponse({
             status: 201,

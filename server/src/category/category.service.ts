@@ -25,7 +25,7 @@ export class CategoryService{
 
         async create(dto: CreateCategoryDto){
             try{
-                const category = this.prisma.category.create({
+                const category = await this.prisma.category.create({
                     data: {
                         name : dto.name,
                         description : dto.description
@@ -66,8 +66,9 @@ export class CategoryService{
                 })
             }catch(error){
                 if(error.code == "P2025"){
-                    throw new ForbiddenException('Category doesnt exist');
+                    throw new ForbiddenException("Category doesn't exist");
                 }
+                throw error;
             }
         }
 }
