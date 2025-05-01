@@ -98,9 +98,10 @@ model Vendor {
   hash         String
   phone_number String
 
-  addresses   VendorAddress?
-  Inventories Inventory[]
+  addresses VendorAddress?
+  products  Product[]
 
+  @@index([id]) //indexing for optimized queries
   @@map("vendors")
 }
 
@@ -136,28 +137,29 @@ model Subcategory {
 }
 
 model Inventory {
-  id            String   @id @default(uuid())
-  stockQuantity Int      @default(1)
-  restockDate   DateTime
-  updatedAt     DateTime @updatedAt
+  id            String    @id @default(uuid())
+  stockQuantity Int       @default(0)
+  restockDate   DateTime?
+  updatedAt     DateTime  @updatedAt
+  productId     String    @unique
 
-  productId String @unique
-  Vendorid  Int    @unique
-
-  product Product @relation(fields: [productId], references: [id])
-  Vendor  Vendor  @relation(fields: [Vendorid], references: [id])
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model Product {
   id            String   @id @default(uuid())
-  name          String   @db.VarChar(1000)
-  descpription  String   @db.VarChar(1000)
-  price         Float
-  discountPrice Float?
+  name          String   @db.VarChar(255)
+  description   String   @db.VarChar(511)
+  price         Decimal  @db.Decimal(10, 2) //Using Decimal on prices to avoid floating-point precision issues with currency.
+  discountPrice Decimal? @db.Decimal(10, 2)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   imageURL      String[]
+  vendorid      Int
 
+  Vendor      Vendor        @relation(fields: [vendorid], references: [id], onDelete: Cascade)
   subcategory Subcategory[]
   Inventory   Inventory?
+
+  @@index([id]) //indexing for optimized queries
 }
