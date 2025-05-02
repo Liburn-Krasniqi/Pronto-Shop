@@ -9,7 +9,7 @@ export function SearchBar() {
         <Form.Control
           type="search"
           className={`rounded-4 ${classes.searchbar}`}
-          placeholder="Search"
+          placeholder="  Search"
           aria-label="Search"
         />
         {/* Seach Icon on the right */}
