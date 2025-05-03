@@ -33,6 +33,6 @@ export class CreateProductDto {
   @IsInt()
   vendorid: number;
 
-  @IsInt()
+  @IsInt({ each: true })
   subcategory: number[];
 }
