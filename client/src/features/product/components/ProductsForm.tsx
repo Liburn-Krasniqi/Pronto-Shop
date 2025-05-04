@@ -182,7 +182,7 @@ export const ProductsForm: React.FC<ProductsFormProps> = (props) => {
     }));
   };
 
-  const fields = [
+  const fields: any = [
     {
       id: "product.name",
       label: "Product Name",

@@ -54,7 +54,7 @@ export const ProductsIndex = () => {
         }
         return response.json();
       })
-      .then((data) => {
+      .then(() => {
         setAlert(true);
         setTimeout(() => {
           setAlert(false);
