@@ -85,10 +85,11 @@ export const ProductsForm: React.FC<ProductsFormProps> = (props) => {
                 productData.subcategory?.map((sc: any) => Number(sc.id)) || [],
             },
             inventory: {
-              stockQuantity: productData.Inventory?.stockQuantity || 0,
+              stockQuantity: productData.Inventory?.stockQuantity ?? 0, // Use nullish coalescing
               restockDate: productData.Inventory?.restockDate,
             },
           });
+          console.log("formData", formData);
         }
         setLoading(false);
       })
@@ -238,7 +239,7 @@ export const ProductsForm: React.FC<ProductsFormProps> = (props) => {
       label: "Subcategory",
       type: "select",
       placeholder: "Select subcategory",
-      value: formData.product.subcategory[0] || "", // For single select
+      value: formData.product.subcategory[0], // For single select
       onChange: (value: string) => handleSubcategoryChange(Number(value)),
       options: subcategories,
     },
@@ -247,11 +248,11 @@ export const ProductsForm: React.FC<ProductsFormProps> = (props) => {
       label: "Stock Quantity",
       type: "number",
       placeholder: "Enter stock quantity",
-      value: formData.inventory.stockQuantity,
+      value: String(formData.inventory.stockQuantity), // convert to string
       onChange: (value: string) =>
         handleInputChange(
           "inventory.stockQuantity",
-          value === "" ? 0 : parseInt(value)
+          value === "" ? 0 : Number(value)
         ),
     },
   ];
@@ -264,7 +265,9 @@ export const ProductsForm: React.FC<ProductsFormProps> = (props) => {
     <div>
       <CustomForm
         title={
-          status === "create" ? "New Product" : `Edit Product ${productId}`
+          status === "create"
+            ? "New Product"
+            : `Edit Product: ${formData.product.name}`
         }
         fields={fields}
         onSubmit={handleFormSubmit}

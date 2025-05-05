@@ -27,7 +27,11 @@ export const CustomForm = ({
         <Field key={index} field={field} index={index} />
       ))}
 
-      <Button variant="primary" type="submit" className="mt-3">
+      <Button
+        variant=""
+        type="submit"
+        className="mt-3 background-1 color-white "
+      >
         {button}
       </Button>
     </Form>

@@ -115,7 +115,7 @@ export const ProductsIndex = () => {
       <div className="d-flex align-items-center justify-content-between">
         <h1 className="ml-auto">Products of (insert vendor name)</h1>
         <button
-          className="btn btn-primary mt-3 mb-2"
+          className="btn background-1 color-white mt-3 mb-2"
           onClick={() => {
             setShowForm(true);
             setFormStatus("create");
