@@ -83,7 +83,7 @@ export const ProductsIndex = () => {
             Name: data[key].name,
             Description: data[key].description,
             Image_URLs: data[key].imageURL,
-            Type: data[key].subcategory[0].name,
+            Type: data[key].subcategory[0]?.name,
             Price: data[key].price,
             Discount_Price: data[key].discountPrice,
             Quantity: data[key].Inventory.stockQuantity,

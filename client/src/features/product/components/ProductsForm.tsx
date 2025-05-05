@@ -38,7 +38,7 @@ export const ProductsForm: React.FC<ProductsFormProps> = (props) => {
       name: "",
       description: "",
       price: 0,
-      vendorid: 2, // Default vendor ID
+      vendorid: 1, // Default vendor ID
       imageURL: [""],
       subcategory: [], // Now initialized as array
     },
@@ -102,6 +102,9 @@ export const ProductsForm: React.FC<ProductsFormProps> = (props) => {
     // Convert all numeric fields to numbers
     const numericProductFields = {
       ...formData.product,
+      imageURL: Array.isArray(formData.product.imageURL)
+        ? formData.product.imageURL
+        : [formData.product.imageURL],
       price: Number(formData.product.price),
       discountPrice: formData.product.discountPrice
         ? Number(formData.product.discountPrice)
@@ -199,6 +202,15 @@ export const ProductsForm: React.FC<ProductsFormProps> = (props) => {
       value: formData.product.description,
       onChange: (value: string) =>
         handleInputChange("product.description", value),
+    },
+    {
+      id: "product.imageURL",
+      label: "Image URL",
+      type: "text",
+      placeholder: "Enter Image URL",
+      value: formData.product.imageURL,
+      onChange: (value: string[]) =>
+        handleInputChange("product.imageURL", value),
     },
     {
       id: "product.price",
