@@ -100,6 +100,8 @@ model Vendor {
 
   addresses VendorAddress?
   products  Product[]
+  RefreshToken RefreshToken[]
+  
 
   @@index([id]) //indexing for optimized queries
   @@map("vendors")
@@ -108,8 +110,11 @@ model Vendor {
 model RefreshToken {
   id        Int      @id @default(autoincrement())
   token     String   @unique
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int?
+  vendorId  Int?
+  user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vendor    Vendor?   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  type      String    //user or vendor
   expiresAt DateTime
   revoked   Boolean  @default(false)
   createdAt DateTime @default(now())

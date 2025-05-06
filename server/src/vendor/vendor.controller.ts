@@ -32,19 +32,19 @@ export class VendorController{
         return this.vendorService.findAll()
     }
     
-    @Post('signup')
-    @ApiOperation({ summary: 'Sign up a new Vendor' })
-    @ApiBody({ type: VendorResponseDto })
-    @ApiResponse({
-        status: 201,
-        description: 'Vendor created successfully' })
-    @ApiResponse({
-        status: 400,
-        description: 'Invalid vendor data',
-      })
-    create(@Body() dto: CreateVendorDto) {
-        return this.vendorService.signup(dto);
-    }
+    // @Post('signup')
+    // @ApiOperation({ summary: 'Sign up a new Vendor' })
+    // @ApiBody({ type: VendorResponseDto })
+    // @ApiResponse({
+    //     status: 201,
+    //     description: 'Vendor created successfully' })
+    // @ApiResponse({
+    //     status: 400,
+    //     description: 'Invalid vendor data',
+    //   })
+    // create(@Body() dto: CreateVendorDto) {
+    //     return this.vendorService.signup(dto);
+    // }
 
     @Get(':id')
     @ApiOperation({ summary: 'Get Vendor by ID' })
