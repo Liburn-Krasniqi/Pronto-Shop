@@ -1,5 +1,6 @@
 //Barrel file for cleaner imports
-export * from "./CustomNavDropDown";
-export * from "./NavItemWithIcon";
-export * from "./ProductCard";
 export * from "./SearchBar";
+export * from "./CustomCard";
+export * from "./ProductCard";
+export * from "./NavItemWithIcon";
+export * from "./CustomNavDropDown";

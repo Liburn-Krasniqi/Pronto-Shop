@@ -1,5 +1,8 @@
 //Can have other things that are not SVG's like the spinner for example
 import "./Animations.css";
+
+import { useState, useEffect } from "react";
+
 // Also i might move this file to somplace else, like in "client/src/assets/" or "client/public/"
 export function EditIcon() {
   return (
@@ -90,8 +93,8 @@ export function LoadingSpinner() {
   return (
     <div className="d-flex justify-content-center">
       <div
-        className="spinner-border text-primary"
-        style={{ width: "3rem", height: "3rem" }}
+        className="spinner-border color-2"
+        style={{ width: "7rem", height: "7rem", borderWidth: "0.45rem" }}
         role="status"
       ></div>
     </div>
@@ -99,25 +102,105 @@ export function LoadingSpinner() {
 }
 
 export function SuccessAlert(props: any) {
-  const alertClass = props.show
-    ? "alert alert-primary mt-1 show"
-    : "alert alert-primary mt-1 hide";
+  const [isVisible, setIsVisible] = useState(props.show);
+
+  useEffect(() => {
+    setIsVisible(props.show);
+  }, [props.show]);
+
+  const handleDismiss = () => {
+    setIsVisible(false);
+    if (props.onDismiss) {
+      props.onDismiss();
+    }
+  };
+
+  if (!isVisible) return null;
 
   return (
-    <div className={`${alertClass} text-center`} role="alert">
+    <div
+      className={`alert alert-success alert-dismissible fade show position-fixed top-0 end-0 m-3 text-center`}
+      role="alert"
+      style={{ zIndex: 1080, minWidth: "300px", maxWidth: "600px" }}
+    >
       {props.children}
+      <button
+        type="button"
+        className="btn-close"
+        data-dismiss="alert"
+        onClick={handleDismiss}
+        aria-label="Close"
+      />
     </div>
   );
 }
 
 export function DangerAlert(props: any) {
-  const alertClass = props.show
-    ? "alert alert-danger mt-1 show"
-    : "alert alert-danger mt-1 hide";
+  // const alertClass = props.show
+  //   ? "alert alert-danger mt-1 py-3 show"
+  //   : "alert alert-danger mt-1 py-3 hide";
 
   return (
-    <div className={`${alertClass} text-center`} role="alert">
+    <div
+      className={`alert alert-danger alert-dismissible fade hide position-fixed top-0 end-0 m-3 text-center`}
+      role="alert"
+      style={{ zIndex: 1080, minWidth: "300px", maxWidth: "600px" }}
+    >
       {props.children}
+      <button
+        type="button"
+        className="btn-close"
+        data-dismiss="alert"
+        aria-label="Close"
+      />
     </div>
   );
 }
+
+export function TestAlert() {
+  return (
+    <div
+      className="alert alert-warning alert-dismissible fade show"
+      role="alert"
+    >
+      <strong>Holy guacamole!</strong> You should check in on some of those
+      fields below.
+      <button className="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  );
+}
+
+// export function DangerAlert(props: any) {
+//   const [isVisible, setIsVisible] = useState(props.show);
+
+//   useEffect(() => {
+//     setIsVisible(props.show);
+//   }, [props.show]);
+
+//   const handleDismiss = () => {
+//     setIsVisible(false);
+//     if (props.onDismiss) {
+//       props.onDismiss();
+//     }
+//   };
+
+//   if (!isVisible) return null;
+
+//   return (
+//     <div
+//       className="alert alert-danger alert-dismissible fade show position-fixed top-0 end-0 m-3"
+//       role="alert"
+//       style={{ zIndex: 1080, minWidth: "300px" }}
+//     >
+//       {props.children}
+//       <button
+//         type="button"
+//         className="btn-close"
+//         onClick={handleDismiss}
+//         aria-label="Close"
+//       />
+//     </div>
+//   );
+// }

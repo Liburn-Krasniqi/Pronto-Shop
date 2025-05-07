@@ -6,7 +6,7 @@ const Layout = () => {
   return (
     <div className="layout-container background-4">
       <MainNavigation />
-      <main className="content">
+      <main className="content px-2 pt-2">
         <Outlet /> {/* This renders the current route's component */}
       </main>
       <Footer />
