@@ -46,7 +46,7 @@ export const CustomTable = ({
           <LoadingSpinner />
         ) : (
           <>
-            {data.length === 0 ? ( // If the fetch request(?) returns nothing display this message (look into custom mesage here)
+            {data && data.length === 0 ? ( // If the fetch request(?) returns nothing display this message (look into custom mesage here)
               <p className="text-center mt-3 color-2 fs-1">
                 {`No data available :(`}
               </p>
@@ -67,38 +67,42 @@ export const CustomTable = ({
                 {/* Record Data */}
                 <tbody>
                   {/* Data[] gets spit into rows */}
-                  {data.map((row) => (
-                    <tr key={row.id}>
-                      {/* Each row is a record */}
-                      {columns.map((column) => (
-                        // that rows data gets mapped into the repective column via this:
-                        <td key={`${row.id}-${column.key}`}>
-                          {row[column.key]}
+                  {(data || []).map(
+                    (
+                      row // fallback for data
+                    ) => (
+                      <tr key={row.id}>
+                        {/* Each row is a record */}
+                        {columns.map((column) => (
+                          // that rows data gets mapped into the repective column via this:
+                          <td key={`${row.id}-${column.key}`}>
+                            {row[column.key]}
+                          </td>
+                        ))}
+                        {/* Action buttons for every record */}
+                        <td className="text-end">
+                          <div className="btn-group" role="group">
+                            <button
+                              onClick={() => handleEdit(row.id)}
+                              type="button"
+                              className="btn btn-warning"
+                              aria-label={`Edit ${entityName}`}
+                            >
+                              <EditIcon />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(row.id)}
+                              type="button"
+                              className="btn btn-danger"
+                              aria-label={`Delete ${entityName}`}
+                            >
+                              <TrashIcon />
+                            </button>
+                          </div>
                         </td>
-                      ))}
-                      {/* Action buttons for every record */}
-                      <td className="text-end">
-                        <div className="btn-group" role="group">
-                          <button
-                            onClick={() => handleEdit(row.id)}
-                            type="button"
-                            className="btn btn-warning"
-                            aria-label={`Edit ${entityName}`}
-                          >
-                            <EditIcon />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(row.id)}
-                            type="button"
-                            className="btn btn-danger"
-                            aria-label={`Delete ${entityName}`}
-                          >
-                            <TrashIcon />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                      </tr>
+                    )
+                  )}
                 </tbody>
               </table>
             )}
