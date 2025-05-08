@@ -41,7 +41,7 @@ export const CustomTable = ({
       </div>
 
       {/* Table */}
-      <CustomCard className="mx-3 my-3 overflow-auto">
+      <CustomCard className="m-3 overflow-auto">
         {loading ? ( // conditional display, if loading is set to true show the spinner!
           <LoadingSpinner />
         ) : (
