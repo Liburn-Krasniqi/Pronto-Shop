@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { CustomCard } from "../CustomCard"; // UI wrapper
+import { CustomCard, CustomField } from "../"; // UI wrapper, and CustomField with Options
 import { LoadingSpinner, Alert } from "../../../assets"; // UI Assets
 import { FormFieldConfig, FormProps } from "../../../types"; // Interfaces, not in this file so its cleaner
 
@@ -63,7 +63,7 @@ export const CustomForm = ({
       {/* Form Title */}
       <div className="d-flex align-items-center justify-content-between mx-3 mt-3">
         <h1 className="ml-auto color-1 fw-bold">
-          {title || (initialData?.id ? "Edit " : "Create " + entityName)}
+          {title || (initialData?.id ? "Edit " : "Create ") + entityName}
         </h1>
       </div>
 
@@ -75,6 +75,7 @@ export const CustomForm = ({
           <form onSubmit={handleSubmit}>
             {/* g-3 references bootstrap gutters A.K.A. the padding between form fields, and p-3 is just padding */}
             <div className="row g-3 p-3">
+              {/* This is where the fields are dynamically generated */}
               {fields.map((field) => (
                 // if no colSpan is specified the field will take up an entire row
                 <div key={field.key} className={`col-${field.colSpan || 12}`}>
@@ -87,21 +88,13 @@ export const CustomForm = ({
                     {/* If required  display Red Asterisk */}
                     {field.required && <span className="text-danger">*</span>}
                   </label>
-                  {/* Field Input */}
-                  <input
-                    type={field.type || "text"}
-                    // If theres an error in said field's input, display that its not valid!
-                    className={`form-control ${
-                      errors[field.key] ? "is-invalid" : ""
-                    }`}
-                    id={field.key}
-                    value={formData[field.key] || ""}
-                    onChange={(e) =>
-                      handleInputChange(field.key, e.target.value)
-                    }
-                    placeholder={field.placeholder}
-                    disabled={loading}
-                    aria-describedby={`${field.key}Help`}
+                  {/* CustomField Here below instead of <input/>!*/}
+                  <CustomField
+                    field={field}
+                    value={formData[field.key] ?? ""}
+                    onChange={(value) => handleInputChange(field.key, value)}
+                    hasError={!!errors[field.key]}
+                    loading={loading}
                   />
                   {/* Descriptive text to help users understend what to input */}
                   {field.helpText && (

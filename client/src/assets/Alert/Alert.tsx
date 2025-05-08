@@ -1,4 +1,3 @@
-// Alert.tsx
 import React, { useEffect } from "react";
 import { MessageType } from "../../types";
 

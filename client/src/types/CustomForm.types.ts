@@ -1,5 +1,13 @@
 import { MessageConfig } from ".";
 
+export interface CustomFieldProps {
+  field: FormFieldConfig; // Pass in the field
+  value: any; // Values if any there
+  hasError: boolean;
+  loading: boolean;
+  onChange: (value: any) => void;
+}
+
 export interface FormMessage extends MessageConfig {
   field?: string; // For field-specific errors
   // for other things just use the standard message config
@@ -35,6 +43,8 @@ export interface FormFieldConfig {
   placeholder?: string;
   // Text to explain the field if neccessary
   helpText?: string;
+  // In case we need a dropdown
+  options?: Array<{ id: string | number; name: string }>;
 }
 
 export interface FormProps {
