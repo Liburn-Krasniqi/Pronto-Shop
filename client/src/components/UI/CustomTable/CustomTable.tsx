@@ -76,7 +76,7 @@ export const CustomTable = ({
                         {columns.map((column) => (
                           // that rows data gets mapped into the repective column via this:
                           <td key={`${row.id}-${column.key}`}>
-                            {row[column.key]}
+                            {row[column.key].name || row[column.key]}
                           </td>
                         ))}
                         {/* Action buttons for every record */}
