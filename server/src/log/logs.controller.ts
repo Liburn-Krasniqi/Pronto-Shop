@@ -4,7 +4,6 @@ import {
   ApiResponse,
   ApiQuery,
   ApiBody,
-  ApiParam,
 } from '@nestjs/swagger';
 import { Query } from '@nestjs/common';
 import { Body, Controller, Post, Get, Delete } from '@nestjs/common';
