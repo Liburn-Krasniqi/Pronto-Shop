@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styles from './Signup.module.css';
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../../hooks/useAuth';
 
 
 interface SignupFormData {
@@ -9,15 +10,24 @@ interface SignupFormData {
   email: string;
   password: string;
   passwordRepeat: string;
+  type: 'user' | 'vendor';
 }
 
 export const SignupPage: React.FC = () => {
+
+  
   const navigate = useNavigate();
+  const { isAuthenticated, userType } = useAuth();
+
+  if(isAuthenticated && userType === 'user') navigate('/profilePage');
+  if(isAuthenticated && userType === 'vendor') navigate('/vendor/show');
+
   const [form, setForm] = useState<SignupFormData>({
     fullName: '',
     email: '',
     password: '',
     passwordRepeat: '',
+    type: 'user',
   });
 
   const [error, setError] = useState<string | null>(null);
@@ -48,6 +58,7 @@ export const SignupPage: React.FC = () => {
           passwordRepeat: form.passwordRepeat,
           firstName,
           lastName,
+          type: form.type 
         }),
       });
 
@@ -64,6 +75,7 @@ export const SignupPage: React.FC = () => {
           email: '',
           password: '',
           passwordRepeat: '',
+          type: 'user',
         });
       }
     } catch (err: any) {

@@ -1,1 +1,1 @@
-export {VendorSignupForm} from './SignUp'
+export {VendorSignupForm} from './auth/SignUp'

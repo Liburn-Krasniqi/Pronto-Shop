@@ -24,6 +24,7 @@ export function ShowVendor() {
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [error, setError] = useState<string | null>(null);
 
+
   useEffect(() => {
     axios.get('http://localhost:3333/vendor')
       .then(res => {
@@ -33,12 +34,12 @@ export function ShowVendor() {
         setError(err.message || 'Failed to fetch vendors');
       });
   }, []);
-
   const navigate = useNavigate();
   
   const handleEdit = (id: number) => {
     navigate(`/vendor/edit/${id}`)
   };
+  
 
   const handleDelete = async(id: number) => {
     if (window.confirm('Are you sure you want to delete this vendor?')) {
@@ -50,6 +51,7 @@ export function ShowVendor() {
           }
     }
   };
+
 
   return (
     <div className="container mt-5">

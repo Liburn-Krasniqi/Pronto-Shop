@@ -2,6 +2,7 @@ import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
+// import { useAuth } from '../../../hooks/useAuth';
 
 interface AddressData {
   country: string;
@@ -28,6 +29,11 @@ interface Message {
 export function EditVendor() {
   const { id } = useParams();
   const navigate = useNavigate();
+  // const isAuthenticated = useAuth();
+
+  // if(!isAuthenticated) {
+  //   navigate('/vendor/signin');
+  // }
 
   const [form, setForm] = useState<VendorFormData>({
     name: '',

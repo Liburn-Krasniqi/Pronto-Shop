@@ -1,21 +1,21 @@
 import { Col, Row, Navbar, Nav, Container, Offcanvas } from "react-bootstrap";
 import { NavItemWithIcon, CustomNavDropdown, SearchBar } from "../../UI";
-import classes from "./MainNavigation.module.css";
+import classes from "./VendorMainNavigation.module.css";
 import { useAuth } from "../../../hooks/useAuth";
 
-export const MainNavigation: React.FC = () => {
+export const VendorMainNavigation: React.FC = () => {
   const { isAuthenticated, userData, userType, logout } = useAuth();
 
   return (
     <Navbar
       expand="md"
-      className={`background-2 rounded-bottom-4 ${classes.navbar}`}
+      className={`background-1 rounded-bottom-4 ${classes.navbar}`}
     >
       <Container fluid className="pe-0">
         <Row className="w-100">
           <Col xs={2} md={1} className="d-flex align-items-center">
             <Navbar.Brand className={`ms-3 ${classes.logo}`} href="#">
-              <img alt="Pronto Logo" src="/letter-p.svg" />
+              <img alt="Pronto Logo" src="/letter-p-2.svg" />
             </Navbar.Brand>
             <Navbar.Toggle
               aria-controls="offcanvasNavbar-expand-md"
@@ -49,24 +49,7 @@ export const MainNavigation: React.FC = () => {
                   <Nav.Item className="flex-grow-1 align-items-center my-2 d-md-none">
                     <SearchBar />
                   </Nav.Item>
-                  <Nav.Item className="my-2 my-md-0">
-                    <Nav.Link
-                      href="#action1"
-                      className={`text-nowrap d-flex align-items-md-center text-white ${classes.navLink}`}
-                    >
-                      <NavItemWithIcon
-                        iconSrc="/Map-pin.svg"
-                        text={
-                          <span className="text-start">
-                            Deliver to{""}
-                            <span className="d-md-none"> </span>
-                            <br className="d-none d-md-inline" />
-                            <strong>{"Kosovo"}</strong>
-                          </span>
-                        }
-                      />
-                    </Nav.Link>
-                  </Nav.Item>
+                  
 
                   <Nav.Item className="flex-grow-1 align-items-center my-2 d-none d-md-block">
                     <SearchBar />

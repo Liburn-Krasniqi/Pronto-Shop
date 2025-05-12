@@ -1,7 +1,11 @@
-import { useState, ChangeEvent, FormEvent } from 'react';
+import { useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Link } from 'react-router-dom';
+import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../../hooks/useAuth';
+
 
 interface AddressData {
   country: string;
@@ -15,9 +19,11 @@ interface SignupFormData {
   name: string;
   email: string;
   password: string;
+  passwordRepeat: string;
   businessName: string;
   phone_number: string;
   address: AddressData;
+  type: 'user' | 'vendor';
 }
 
 interface Message {
@@ -30,6 +36,7 @@ export function VendorSignupForm() {
     name: '',
     email: '',
     password: '',
+    passwordRepeat: '',
     businessName: '',
     phone_number: '',
     address: {
@@ -38,11 +45,19 @@ export function VendorSignupForm() {
         postalCode: '',
         street: '',
         state: ''
-    }
+    },
+    type: 'vendor'
   });
 
   const [message, setMessage] = useState<Message | null>(null);
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
+  useEffect(() => {
+        if (isAuthenticated) {
+           navigate('/vendor/show');
+        }
+      }, [isAuthenticated, navigate]);
   
 const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
   const { name, value } = e.target;
@@ -67,12 +82,13 @@ const handleSubmit = async (e: FormEvent) => {
   e.preventDefault();
 
   try {
-      const res = await axios.post('http://localhost:3333/vendor/signup', form);
+      const res = await axios.post('http://localhost:3333/auth/signup', form);
       setMessage({ type: 'success', text: `Welcome, ${res.data.name}! 🎉` });
       setForm({
           name: '',
           email: '',
           password: '',
+          passwordRepeat: '',
           businessName: '',
           phone_number: '',
           address: {
@@ -81,9 +97,14 @@ const handleSubmit = async (e: FormEvent) => {
               postalCode: '',
               street: '',
               state: ''
-          }
+          },
+          type: 'vendor'
       });
-      
+
+      const { access_token, refresh_token } = res.data;
+      Cookies.set('access_token', access_token);
+      Cookies.set('refresh_token', refresh_token);
+      navigate('/vendor/show');
   } catch (err: any) {
       const errorText = err.response?.data?.message || err.message;
       setMessage({ type: 'danger', text: `Signup failed: ${errorText}` });
@@ -173,6 +194,18 @@ const handleSubmit = async (e: FormEvent) => {
                   />
                 </div>
 
+                <div className="mb-3">
+                  <label className="form-label">Confirm Password</label>
+                  <input
+                    type="password"
+                    name="passwordRepeat"
+                    className="form-control"
+                    value={form.passwordRepeat}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
 
                 <hr className="my-4" />
                 <h5 className="mb-3">Address Information (Optional)</h5>
@@ -253,7 +286,7 @@ const handleSubmit = async (e: FormEvent) => {
               <hr />
               <p className='text-center mt-4'>
                 Already have an account? 
-                <Link to="" className='color-2 text-decoration-none'> Sign in</Link>
+                <Link to="../../vendor/signin" className='color-2 text-decoration-none'> Sign in</Link>
               </p>
             </div>
           </div>

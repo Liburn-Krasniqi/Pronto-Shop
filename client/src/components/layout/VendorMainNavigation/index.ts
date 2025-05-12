@@ -1,0 +1,1 @@
+export {VendorMainNavigation} from "./VendorMainNavigation"
