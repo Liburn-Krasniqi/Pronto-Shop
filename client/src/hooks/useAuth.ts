@@ -67,10 +67,12 @@ export const useAuth = () => {
       const decoded: DecodedToken = jwtDecode(storedToken);
       const endpoint = decoded.type === 'user' ? 'users/me' : 'vendor/me';
       setUserType(decoded.type);
+      
       let response = await fetch(`http://localhost:3333/${endpoint}`, {
         headers: {
           Authorization: `Bearer ${storedToken}`,
         },
+
       });
       
 
@@ -93,6 +95,7 @@ export const useAuth = () => {
 
       if (response.ok) {
         const data = await response.json();
+        // console.log(data);
         setToken(storedToken);
         setIsAuthenticated(true);
         setUserData(data);

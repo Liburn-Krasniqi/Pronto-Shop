@@ -55,7 +55,7 @@ export function VendorSignupForm() {
 
   useEffect(() => {
         if (isAuthenticated) {
-           navigate('/vendor/show');
+           navigate('/vendor/profile');
         }
       }, [isAuthenticated, navigate]);
   
@@ -104,7 +104,7 @@ const handleSubmit = async (e: FormEvent) => {
       const { access_token, refresh_token } = res.data;
       Cookies.set('access_token', access_token);
       Cookies.set('refresh_token', refresh_token);
-      navigate('/vendor/show');
+      navigate('/vendor/profile');
   } catch (err: any) {
       const errorText = err.response?.data?.message || err.message;
       setMessage({ type: 'danger', text: `Signup failed: ${errorText}` });

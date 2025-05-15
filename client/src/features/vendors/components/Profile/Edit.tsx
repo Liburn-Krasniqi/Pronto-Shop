@@ -2,7 +2,7 @@ import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
-// import { useAuth } from '../../../hooks/useAuth';
+import { useAuth } from '../../../../hooks/useAuth';
 
 interface AddressData {
   country: string;
@@ -27,13 +27,8 @@ interface Message {
 }
 
 export function EditVendor() {
-  const { id } = useParams();
+  const {userData,token} = useAuth();
   const navigate = useNavigate();
-  // const isAuthenticated = useAuth();
-
-  // if(!isAuthenticated) {
-  //   navigate('/vendor/signin');
-  // }
 
   const [form, setForm] = useState<VendorFormData>({
     name: '',
@@ -53,22 +48,19 @@ export function EditVendor() {
   const [message, setMessage] = useState<Message | null>(null);
 
   useEffect(() => {
-    // Fetch vendor data by ID and populate the form
-    axios.get(`http://localhost:3333/vendor/${id}`)
-      .then(res => {
-        const data = res.data;
+    if(userData){
         setForm({
-          name: data.name || '',
-          email: data.email || '',
+          name: userData.name || '',
+          email: userData.email || '',
           password: '', // do not prefill password
-          businessName: data.businessName || '',
-          phone_number: data.phone_number || '',
-          addresses: data.addresses ? {
-            country: data.addresses.country ?? '',
-            city: data.addresses.city ?? '',
-            postalCode: data.addresses.postalCode ?? '',
-            street: data.addresses.street ?? '',
-            state: data.addresses.state ?? ''
+          businessName: userData.businessName || '',
+          phone_number: userData.phone_number || '',
+          addresses: userData.addresses ? {
+            country: userData.addresses.country ?? '',
+            city: userData.addresses.city ?? '',
+            postalCode: userData.addresses.postalCode ?? '',
+            street: userData.addresses.street ?? '',
+            state: userData.addresses.state ?? ''
           } : {
             country: '',
             city: '',
@@ -77,11 +69,8 @@ export function EditVendor() {
             state: ''
           }
         });
-      })
-      .catch(() => {
-        setMessage({ type: 'danger', text: 'Failed to load vendor data.' });
-      });
-  }, [id]);
+      }
+      }, [userData]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -117,9 +106,9 @@ export function EditVendor() {
     };
 
     try {
-      await axios.patch(`http://localhost:3333/vendor/${id}`, payload);
+      await axios.patch(`http://localhost:3333/vendor/me`, payload, { headers: { Authorization: `Bearer ${token}` } });
       setMessage({ type: 'success', text: 'Vendor updated successfully!' });
-      setTimeout(() => navigate('/vendor/show'), 1500); // redirect after update
+      setTimeout(() => navigate('/vendor/profile'), 1500); // redirect after update
     } catch (err: any) {
       const errorText = err.response?.data?.message || err.message;
       setMessage({ type: 'danger', text: `Update failed: ${errorText}` });

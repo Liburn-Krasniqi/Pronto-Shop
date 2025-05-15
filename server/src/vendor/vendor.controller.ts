@@ -63,19 +63,7 @@ export class VendorController{
       return vendorData;
     }
     
-    // @Post('signup')
-    // @ApiOperation({ summary: 'Sign up a new Vendor' })
-    // @ApiBody({ type: VendorResponseDto })
-    // @ApiResponse({
-    //     status: 201,
-    //     description: 'Vendor created successfully' })
-    // @ApiResponse({
-    //     status: 400,
-    //     description: 'Invalid vendor data',
-    //   })
-    // create(@Body() dto: CreateVendorDto) {
-    //     return this.vendorService.signup(dto);
-    // }
+
 
     @Get(':id')
     @ApiOperation({ summary: 'Get Vendor by ID' })
@@ -90,15 +78,15 @@ export class VendorController{
         return this.vendorService.findById(Number(id));
     }
 
-
-    @Patch(':id')
+    @UseGuards(JwtVendorGuard)
+    @Patch('me')
     @ApiOperation({ summary: 'Update Vendor by ID' })
     @ApiParam({ name: 'id', type: Number })
     @ApiBody({ type: VendorResponseDto })
     @ApiResponse({ status: 200, description: 'Vendor updated successfully' })
     @ApiResponse({ status: 404, description: 'Vendor not found' })
-    update(@Param('id') id: number, @Body() dto: UpdateVendorDto){
-        return this.vendorService.update(Number(id),dto)
+    update(@GetUser() user :{id: number}, @Body() dto: UpdateVendorDto){
+        return this.vendorService.update(Number(user.id),dto)
     }
     
 

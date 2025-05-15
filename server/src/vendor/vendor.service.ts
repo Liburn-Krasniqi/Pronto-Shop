@@ -16,39 +16,7 @@ export class VendorService{
           }
         });
     }
-
-    // async signup(dto: CreateVendorDto) {
-    //     const hash = await argon.hash(dto.password);
-        
-    //     try {
-    //         return await this.prisma.$transaction(async (tx) => {
-
-    //             const vendor = await tx.vendor.create({
-    //                 data: {
-    //                     email: dto.email,
-    //                     hash,
-    //                     name: dto.name,
-    //                     businessName: dto.businessName,
-    //                     phone_number: dto.phone_number
-    //                 }
-    //             });
-
-    //             if (dto.address) {
-    //                 await tx.vendorAddress.create({
-    //                     data: this.transformVendorAddressData(dto.address, vendor.id)
-    //                 });
-    //             }
-
-    //             return vendor;
-    //         });
-    //     } catch (error) {
-    //         if (error.code === "P2002") {
-    //             throw new ForbiddenException('Credentials taken');
-    //         }
-    //         throw error;
-    //     }
-    // }
-
+    
     private transformVendorAddressData(address: VendorAddressDto, vendorId: number): Prisma.VendorAddressCreateInput {
         return {
             street: address.street,

@@ -6,8 +6,9 @@ import { ProfilePage } from "../../features/users/components/profile";
 import { EditProfilePage } from "../../features/users/components/editProfile";
 import { VendorSignupForm } from "../../features/vendors/components/auth/SignUp";
 import { VendorSigninForm } from "../../features/vendors/components/auth/SignIn";
-import { ShowVendor } from "../../features/vendors/components/Show";
-import { EditVendor } from "../../features/vendors/components/Edit";
+// import { ShowVendor } from "../../features/vendors/components/Show";
+import { VendorProfile } from "../../features/vendors/components/Profile/VendorProfile";
+import { EditVendor } from "../../features/vendors/components/Profile/Edit";
 import {
   CreateCategory,
   ShowCategory,
@@ -18,6 +19,7 @@ import {
   EditSubcategory,
   ShowSubcategories,
 } from "../../features/subcategories/components/index";
+
 import withAuth from "../../components/auth/withAuth";
 import { ProductsIndex } from "../../features/product";
 
@@ -25,7 +27,7 @@ import { ProductsIndex } from "../../features/product";
 const ProtectedEditProfile = withAuth(EditProfilePage, 'user');
 const ProtectedProfilePage = withAuth(ProfilePage, 'user');
 
-const ProtectedVendorProfilePage = withAuth(ShowVendor, 'vendor');
+const ProtectedVendorProfilePage = withAuth(VendorProfile, 'vendor');
 const ProtectedVendorEditProfile = withAuth(EditVendor, 'vendor');
 
 export function AppRoutes() {
@@ -39,11 +41,11 @@ export function AppRoutes() {
         <Route path="editProfilePage" element={<ProtectedEditProfile />} />
         <Route path="vendor/signup" element={<VendorSignupForm />} />
         <Route path="vendor/signin" element={<VendorSigninForm />} />
-        <Route path="vendor/show" element={<ProtectedVendorProfilePage />} />
-        <Route path="vendor/edit/:id" element={<ProtectedVendorEditProfile />} />
+        <Route path="vendor/profile" element={<ProtectedVendorProfilePage />} />
+        <Route path="vendor/edit" element={<ProtectedVendorEditProfile />} />
         <Route path="category/create" element={<CreateCategory />} />
         <Route path="category/show" element={<ShowCategory />} />
-        <Route path="category/edit/:id" element={<EditCategory />} />
+        <Route path="category/edit" element={<EditCategory />} />
         <Route path="subcategory/create" element={<CreateSubcategory />} />
         <Route path="subcategory/show" element={<ShowSubcategories />} />
         <Route path="subcategory/edit/:id" element={<EditSubcategory />} />

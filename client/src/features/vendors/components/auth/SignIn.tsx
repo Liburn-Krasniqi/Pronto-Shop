@@ -31,7 +31,7 @@ export const VendorSigninForm: React.FC = () => {
 
   useEffect(() => {
           if (isAuthenticated) {
-             window.location.href = '/vendor/show';
+             window.location.href = '/vendor/profile';
           }
   }, [isAuthenticated, navigate]);
 
@@ -51,7 +51,7 @@ export const VendorSigninForm: React.FC = () => {
       // Use the centralized login function
       await login(form.email, form.password, form.type);
       // Redirect to profile page after successful login
-      window.location.href = '/vendor/show';
+      window.location.href = '/vendor/profile';
     } catch (err: any) {
       setMessage({type: 'danger', text: 'Something went wrong. Please try again.'});
       console.error(err);
