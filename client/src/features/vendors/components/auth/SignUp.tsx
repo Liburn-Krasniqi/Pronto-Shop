@@ -104,7 +104,7 @@ const handleSubmit = async (e: FormEvent) => {
       const { access_token, refresh_token } = res.data;
       Cookies.set('access_token', access_token);
       Cookies.set('refresh_token', refresh_token);
-      navigate('/vendor/profile');
+      window.location.href = '/vendor/profile';
   } catch (err: any) {
       const errorText = err.response?.data?.message || err.message;
       setMessage({ type: 'danger', text: `Signup failed: ${errorText}` });
