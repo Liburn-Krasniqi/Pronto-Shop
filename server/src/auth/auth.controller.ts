@@ -15,7 +15,7 @@ export class AuthController{
     }
 
     @HttpCode(HttpStatus.OK)
-    @Post('login')
+    @Post('signin')
     signin(@Body() dto: SignInDto){
         return this.authService.signin(dto); 
     }
@@ -23,9 +23,9 @@ export class AuthController{
     @Post('refresh')
     @UseGuards(RefreshTokenGuard)
     async refreshToken(@Req() req: Request) {
-        const user = req.user as { sub: number; email: string; refreshToken: string };
+        const user = req.user as { sub: number; email: string; refreshToken: string, type: 'user' | 'vendor' }; 
         
-        const tokens = await this.authService.refreshTokens(user.sub, user.email, user.refreshToken);
+        const tokens = await this.authService.refreshTokens(user.sub, user.email, user.refreshToken, user.type);
         
         return tokens;
     }

@@ -1,12 +1,12 @@
 import Cookies from 'js-cookie';
 
-export const login = async (email: string, password: string) => {
-  const response = await fetch('http://localhost:3333/auth/login', {
+export const login = async (email: string, password: string, type: 'user' | 'vendor') => {
+  const response = await fetch('http://localhost:3333/auth/signin', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ email, password, type }),
   });
 
   if (!response.ok) {

@@ -1,4 +1,4 @@
-import { IsEmail, IsString } from 'class-validator';
+import { IsEmail, IsString, IsIn } from 'class-validator';
 
 
 export class SignInDto {
@@ -7,5 +7,9 @@ export class SignInDto {
   
     @IsString()
     password: string;
+
+    @IsIn(['user', 'vendor'])
+    type: 'user' | 'vendor';
+
   }
   

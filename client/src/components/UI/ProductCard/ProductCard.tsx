@@ -5,9 +5,8 @@ export function ProductCard() {
     <Card
       style={{
         width: "25rem",
-        boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
       }}
-      className="rounded-4 my-2 mx-4 border-0 p-3"
+      className="shadow-bottom rounded-4 my-2 mx-4 border-0 p-3"
     >
       <Card.Body>
         <Card.Title className="fw-bold my-2">

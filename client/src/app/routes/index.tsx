@@ -2,18 +2,33 @@ import { Route, Routes } from "react-router-dom";
 import Layout from "../../components/layout/Layout";
 import { LandingPage } from "../../features/landing/components/LandingPage";
 import { SignupPage, SigninPage } from "../../features/users/components/auth";
-import { ProfilePage } from "../../features/users/components/profile"
+import { ProfilePage } from "../../features/users/components/profile";
 import { EditProfilePage } from "../../features/users/components/editProfile";
-import { VendorSignupForm } from "../../features/vendors/components/SignUp";
-import { ShowVendor } from "../../features/vendors/components/Show";
-import { EditVendor } from "../../features/vendors/components/Edit";
-import { CreateCategory, ShowCategory, EditCategory } from "../../features/categories/components/index";
-import { CreateSubcategory, EditSubcategory, ShowSubcategories} from "../../features/subcategories/components/index";
+import { VendorSignupForm } from "../../features/vendors/components/auth/SignUp";
+import { VendorSigninForm } from "../../features/vendors/components/auth/SignIn";
+// import { ShowVendor } from "../../features/vendors/components/Show";
+import { VendorProfile } from "../../features/vendors/components/Profile/VendorProfile";
+import { EditVendor } from "../../features/vendors/components/Profile/Edit";
+import {
+  CreateCategory,
+  ShowCategory,
+  EditCategory,
+} from "../../features/categories/components/index";
+import {
+  CreateSubcategory,
+  EditSubcategory,
+  ShowSubcategories,
+} from "../../features/subcategories/components/index";
+
 import withAuth from "../../components/auth/withAuth";
+import { ProductsIndex } from "../../features/product";
 
 
-const ProtectedEditProfile = withAuth(EditProfilePage);
-const ProtectedProfilePage = withAuth(ProfilePage);
+const ProtectedEditProfile = withAuth(EditProfilePage, 'user');
+const ProtectedProfilePage = withAuth(ProfilePage, 'user');
+
+const ProtectedVendorProfilePage = withAuth(VendorProfile, 'vendor');
+const ProtectedVendorEditProfile = withAuth(EditVendor, 'vendor');
 
 export function AppRoutes() {
   return (
@@ -25,14 +40,16 @@ export function AppRoutes() {
         <Route path="profilePage" element={<ProtectedProfilePage />} />
         <Route path="editProfilePage" element={<ProtectedEditProfile />} />
         <Route path="vendor/signup" element={<VendorSignupForm />} />
-        <Route path="vendor/show" element={<ShowVendor />} />
-        <Route path="vendor/edit/:id" element={<EditVendor />} />
+        <Route path="vendor/signin" element={<VendorSigninForm />} />
+        <Route path="vendor/profile" element={<ProtectedVendorProfilePage />} />
+        <Route path="vendor/edit" element={<ProtectedVendorEditProfile />} />
         <Route path="category/create" element={<CreateCategory />} />
         <Route path="category/show" element={<ShowCategory />} />
-        <Route path="category/edit/:id" element={<EditCategory />} />
+        <Route path="category/edit" element={<EditCategory />} />
         <Route path="subcategory/create" element={<CreateSubcategory />} />
         <Route path="subcategory/show" element={<ShowSubcategories />} />
         <Route path="subcategory/edit/:id" element={<EditSubcategory />} />
+        <Route path="product" element={<ProductsIndex />} />
       </Route>
     </Routes>
   );

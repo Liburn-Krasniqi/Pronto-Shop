@@ -1,12 +1,21 @@
 import { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
+import {jwtDecode} from 'jwt-decode';
+
+interface DecodedToken {
+  sub: number;
+  email: string;
+  type: 'user' | 'vendor';
+  exp: number;
+}
 
 export const useAuth = () => {
   const [token, setToken] = useState<string | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [userData, setUserData] = useState<any>(null);
+  const [userType, setUserType] = useState<'user' | 'vendor' | null>(null);
 
   const refreshAccessToken = async () => {
     try {
@@ -29,6 +38,10 @@ export const useAuth = () => {
       if (refresh_token) {
         Cookies.set('refresh_token', refresh_token);
       }
+
+      const decoded: DecodedToken = jwtDecode(access_token);
+      setUserType(decoded.type);
+
       return access_token;
     } catch (error) {
       // Clear tokens if refresh fails
@@ -50,16 +63,30 @@ export const useAuth = () => {
 
     try {
       // First try with current token
-      let response = await fetch('http://localhost:3333/users/me', {
+     
+      const decoded: DecodedToken = jwtDecode(storedToken);
+      const endpoint = decoded.type === 'user' ? 'users/me' : 'vendor/me';
+      setUserType(decoded.type);
+      
+      let response = await fetch(`http://localhost:3333/${endpoint}`, {
         headers: {
           Authorization: `Bearer ${storedToken}`,
         },
+
       });
+      
 
       // If token expired, try to refresh
       if (response.status === 401) {
         storedToken = await refreshAccessToken();
-        response = await fetch('http://localhost:3333/users/me', {
+
+        if (!storedToken) throw new Error("No token to decode");
+        const decodedRefresh: DecodedToken = jwtDecode(storedToken);
+
+        const refreshedEndpoint = decodedRefresh.type === 'user' ? 'users/me' : 'vendor/me';
+        setUserType(decodedRefresh.type);
+
+        response = await fetch(`http://localhost:3333/${refreshedEndpoint}`, {
           headers: {
             Authorization: `Bearer ${storedToken}`,
           },
@@ -68,6 +95,7 @@ export const useAuth = () => {
 
       if (response.ok) {
         const data = await response.json();
+        // console.log(data);
         setToken(storedToken);
         setIsAuthenticated(true);
         setUserData(data);
@@ -83,9 +111,6 @@ export const useAuth = () => {
     }
   };
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
 
   const logout = () => {
     Cookies.remove('access_token');
@@ -93,7 +118,12 @@ export const useAuth = () => {
     setToken(null);
     setIsAuthenticated(false);
     setUserData(null);
+    setUserType(null);
   };
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
 
   return { 
     token, 
@@ -101,6 +131,7 @@ export const useAuth = () => {
     loading, 
     error, 
     userData,
+    userType,
     setToken,
     setIsAuthenticated,
     refreshAccessToken,

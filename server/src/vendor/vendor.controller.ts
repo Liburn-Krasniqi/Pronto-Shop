@@ -6,16 +6,19 @@ import {
     ApiBody,
     ApiParam,
   } from '@nestjs/swagger';
-import {Query} from '@nestjs/common';
+import {HttpException, HttpStatus, Query, UseGuards} from '@nestjs/common';
 import { Body, Controller, Post, Get, Req, Param, Put, Patch, Delete } from "@nestjs/common";
 import { VendorService } from "./vendor.service";
 import { CreateVendorDto, UpdateVendorDto,VendorResponseDto } from "./dto";
+import { JwtGuard, JwtVendorGuard } from 'src/auth/guard';
+import { GetUser } from 'src/auth/decorator';
+import { PrismaService } from '../prisma/prisma.service';
 
 
 @ApiTags('Vendors')
 @Controller('vendor')
 export class VendorController{
-    constructor(private vendorService: VendorService) {}
+    constructor(private vendorService: VendorService,private prisma: PrismaService) {}
 
 
     @Get()
@@ -31,20 +34,36 @@ export class VendorController{
     findAll(){
         return this.vendorService.findAll()
     }
-    
-    @Post('signup')
-    @ApiOperation({ summary: 'Sign up a new Vendor' })
-    @ApiBody({ type: VendorResponseDto })
-    @ApiResponse({
-        status: 201,
-        description: 'Vendor created successfully' })
-    @ApiResponse({
-        status: 400,
-        description: 'Invalid vendor data',
-      })
-    create(@Body() dto: CreateVendorDto) {
-        return this.vendorService.signup(dto);
+
+    @UseGuards(JwtVendorGuard)
+    @Get('me')
+    async getme(@GetUser() user: { id: number }) {
+      const vendorData = await this.prisma.vendor.findUnique({
+        where: { id: user.id },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          businessName: true,
+          phone_number: true,
+          createdAt: true,
+          updatedAt: true,
+          addresses: {
+          select: {
+            id: true,
+            street: true,
+            city: true,
+            state: true,
+            postalCode: true,
+            country: true
+          }
+        }
+        }
+      });
+      return vendorData;
     }
+    
+
 
     @Get(':id')
     @ApiOperation({ summary: 'Get Vendor by ID' })
@@ -59,15 +78,15 @@ export class VendorController{
         return this.vendorService.findById(Number(id));
     }
 
-
-    @Patch(':id')
+    @UseGuards(JwtVendorGuard)
+    @Patch('me')
     @ApiOperation({ summary: 'Update Vendor by ID' })
     @ApiParam({ name: 'id', type: Number })
     @ApiBody({ type: VendorResponseDto })
     @ApiResponse({ status: 200, description: 'Vendor updated successfully' })
     @ApiResponse({ status: 404, description: 'Vendor not found' })
-    update(@Param('id') id: number, @Body() dto: UpdateVendorDto){
-        return this.vendorService.update(Number(id),dto)
+    update(@GetUser() user :{id: number}, @Body() dto: UpdateVendorDto){
+        return this.vendorService.update(Number(user.id),dto)
     }
     
 

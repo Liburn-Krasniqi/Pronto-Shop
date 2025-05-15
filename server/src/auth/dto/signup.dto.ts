@@ -1,8 +1,12 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength, IsObject, ValidateNested } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MinLength, IsObject, ValidateNested, IsOptional, IsIn } from 'class-validator';
 import { Type } from 'class-transformer';
 import { UserAddressDto } from '../../user/dto/userAddress.dto';
+import { VendorAddressDto } from '../../vendor/dto/vendorAddress.dto';
+
 
 export class SignUpDto{
+
+    //Per Users
     @IsEmail()
     @IsNotEmpty()
     email: string;
@@ -16,10 +20,31 @@ export class SignUpDto{
     passwordRepeat: string;
 
     @IsString()
-    @IsNotEmpty()
+    @IsOptional()
     firstName: string;
 
     @IsString()
-    @IsNotEmpty()
+    @IsOptional()
     lastName: string;
+
+    @IsIn(['user', 'vendor'])
+    type: 'user' | 'vendor';
+
+    //Per Vendors
+
+    @IsOptional()
+    @IsString()
+    businessName: string
+
+    @IsOptional()
+    @IsString()
+    name: string
+
+    @IsOptional()
+    @IsString()
+    phone_number: string
+
+    @IsOptional()
+    @Type(() => VendorAddressDto)
+    address?: VendorAddressDto;
 }

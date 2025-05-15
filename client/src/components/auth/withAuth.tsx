@@ -2,19 +2,20 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 
-const withAuth = (WrappedComponent: React.ComponentType) => {
+const withAuth = (WrappedComponent: React.ComponentType, role?: string) => {
   return (props: any) => {
     const navigate = useNavigate();
     const { isAuthenticated, loading } = useAuth();
-
+    
+    
     useEffect(() => {
       if (!loading && !isAuthenticated) {
-        navigate('/login');
+        if(role === 'vendor') navigate('/vendor/signin');
+        else navigate('/login');
       }
-    }, [isAuthenticated, loading, navigate]);
+    }, [isAuthenticated, loading, role, navigate]);
 
     if (loading) return <div>Loading...</div>;
-    if (!isAuthenticated) return null;
 
     return <WrappedComponent {...props} />;
   };

@@ -27,11 +27,12 @@ export class AuthService{
       const hash = await argon.hash(dto.password);
       
       try{
+        if(dto.type === "user"){
         const user = await this.prisma.user.create({
             data: {
                 email: dto.email,
                 hash,
-                firstName: dto.firstName  ,
+                firstName: dto.firstName,
                 lastName: dto.lastName,
                 role: "user"
             },
@@ -44,7 +45,44 @@ export class AuthService{
                 lastName: true
             }
         })
-        return this.generateToken(user.id, user.email)
+        return this.generateToken(user.id, user.email, 'user')
+      }else if(dto.type === "vendor"){
+        const vendor = await this.prisma.$transaction(async (tx) => {
+          const createdVendor = await tx.vendor.create({
+            data: {
+              email: dto.email,
+              hash,
+              name: dto.name,
+              businessName: dto.businessName,
+              phone_number: dto.phone_number
+            }
+          });
+  
+          if (dto.address) {
+            await tx.vendorAddress.create({
+              data: {
+                street: dto.address.street,
+                city: dto.address.city,
+                state: dto.address.state,
+                postalCode: dto.address.postalCode,
+                country: dto.address.country,
+                vendor: {
+                  connect: { id: createdVendor.id }
+                }
+              }
+            });
+          }
+  
+          return createdVendor;
+        });
+
+        return this.generateToken(vendor.id, vendor.email, 'vendor');
+      }
+
+      else {
+        throw new ForbiddenException('Invalid account type');
+      }
+
       }catch(error){
             if (error instanceof PrismaClientKnownRequestError){
                 if (error.code === 'P2002'){
@@ -58,20 +96,32 @@ export class AuthService{
     }
 
     async signin(dto: SignInDto){
-        const user = await this.prisma.user.findUnique({
+      let account: any;
+
+      if(dto.type === "user"){
+        account = await this.prisma.user.findUnique({
             where: {
                 email: dto.email,
             },
         });
+      }else if(dto.type === "vendor"){
+        account = await this.prisma.vendor.findUnique({
+            where: {
+                email: dto.email,
+            },
+        });
+      }else{
+        throw new ForbiddenException('Invalid account type');
+      }
 
-        if (!user){
+        if (!account){
             throw new ForbiddenException(
-                'Credentials incorrect' + user,
+                'Credentials incorrect'
             );
         }
 
         const pwMatches = await argon.verify(
-            user.hash,
+            account.hash,
             dto.password,
         );
 
@@ -80,16 +130,17 @@ export class AuthService{
                 'Credentials Incorrect'
             );
         }
-        return this.generateToken(user.id, user.email)
+        return this.generateToken(account.id, account.email, dto.type);
     }
 
-    async generateToken(userId: number, email: string): Promise<{ 
+    async generateToken(userId: number, email: string, type: 'user' | 'vendor'): Promise<{ 
         access_token: string,
         refresh_token: string 
       }> {
         const payload = {
           sub: userId, 
-          email
+          email,
+          type
         };
         
         const secret = this.config.get('JWT_SECRET');
@@ -114,8 +165,10 @@ export class AuthService{
       
         await this.prisma.refreshToken.create({
           data: {
-            userId,
             token: refresh_token,
+            type,
+            userId: type==='user' ? userId : undefined,
+            vendorId: type==='vendor' ? userId : undefined,
             expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
           }
         });
@@ -126,22 +179,25 @@ export class AuthService{
         };
     }
 
-    async refreshTokens(userId: number, email: string, refreshToken: string) {
+    async refreshTokens(userId: number, email: string, refreshToken: string, type: 'user' | 'vendor') {
         await this.prisma.refreshToken.deleteMany({
           where: {
-            token: refreshToken
+            token: refreshToken,
+            type,
+            ...(type === 'user' ? { userId } : { vendorId: userId })
           }
         });
       
-        return this.generateToken(userId, email);
+        return this.generateToken(userId, email, type);
     }
 
-    async logout(userId: number, refreshToken: string) {
+    async logout(userId: number, refreshToken: string, type: 'user' | 'vendor') {
 
         await this.prisma.refreshToken.updateMany({
           where: {
-            userId,
-            token: refreshToken
+            token: refreshToken,
+            type,
+            ...(type === 'user' ? { userId } : { vendorId: userId })
           },
           data: {
             revoked: true

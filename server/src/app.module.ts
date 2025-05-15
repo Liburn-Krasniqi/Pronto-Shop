@@ -8,7 +8,8 @@ import { LogsModule } from './log/logs.module';
 import { MongoModule } from './mongo';
 import { CategoryModule } from './category/category.module';
 import { SubcategoryModule } from './subcategory/subcategory.module';
-
+import { ProductModule } from './product/product.module';
+import { InventoryModule } from './inventory/inventory.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -22,6 +23,8 @@ import { SubcategoryModule } from './subcategory/subcategory.module';
     LogsModule,
     CategoryModule,
     SubcategoryModule,
+    ProductModule,
+    InventoryModule,
   ],
 })
 export class AppModule {}
