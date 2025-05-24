@@ -1,9 +1,13 @@
 import { Container, Row, Col, Nav, NavLink } from "react-bootstrap";
 import classes from "./Footer.module.css";
+import { useAuth } from "../../../hooks/useAuth";
 
 export function Footer() {
+  const { userType } = useAuth();
+  const isVendor = userType === "vendor";
+
   return (
-    <footer className="footer background-2 rounded-top-4 pt-2 mt-4">
+    <footer className={`${isVendor ? 'background-1' : 'background-2'} footer rounded-top-4 pt-2 mt-4`}>
       <Container fluid>
         <Row className="text-white mt-4 ms-3 pb-4">
           <Col>
@@ -40,7 +44,7 @@ export function Footer() {
           </Col>
         </Row>
         <Row
-          className={`background-1 rounded-top-4 pt-4 ps-4 d-flex justify-content-center align-items-center ${classes.lower_footer}`}
+          className={`${isVendor ? 'background-2' : 'background-1'} rounded-top-4 pt-4 ps-4 d-flex justify-content-center align-items-center ${classes.lower_footer}`}
         >
           <p className="text-white text-center fs-4">
             © 2025, ProntoShop.com, Inc.

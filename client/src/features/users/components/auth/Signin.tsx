@@ -2,24 +2,35 @@ import React, { useState } from 'react';
 import styles from './Signup.module.css';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../../../../utils/auth';
+import { useAuth } from '../../../../hooks/useAuth';
 
 
 interface SigninFormData {
   email: string;
   password: string;
+  type: 'user' | 'vendor';
 }
+
 
 export const SigninPage: React.FC = () => {
   const navigate = useNavigate();
+    const { isAuthenticated, loading, userType } = useAuth();
+
+    if(isAuthenticated && userType === 'user') navigate('/profilePage');
+    if(isAuthenticated && userType === 'vendor') navigate('/vendor/show');
+  
   const [form, setForm] = useState<SigninFormData>({
     email: '',
     password: '',
+    type: 'user',
   });
 
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  // const [success, setSuccess] = useState<string | null>(null);
+  // const [loading, setLoading] = useState<boolean>(false);
 
+
+ 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({
       ...form,
@@ -30,22 +41,20 @@ export const SigninPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setLoading(true);
+    // setLoading(true);
 
     try {
       // Use the centralized login function
-      await login(form.email, form.password);
-      
+      await login(form.email, form.password, form.type);
       // Redirect to profile page after successful login
-      navigate('/profilePage');
+      window.location.href = '/profilePage';
     } catch (err: any) {
       setError(err.message || 'Something went wrong. Please try again.');
       console.error(err);
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
-
   return (
     <div>
       <div className={styles.logo}>
@@ -81,7 +90,7 @@ export const SigninPage: React.FC = () => {
               </button>
             </form>
             {error && <p style={{ color: 'red' }}>{error}</p>}
-            {success && <p style={{ color: 'green' }}>{success}</p>}
+            {/* {success && <p style={{ color: 'green' }}>{success}</p>} */}
           
             <div className={styles.BottomInfo}>
             <hr />

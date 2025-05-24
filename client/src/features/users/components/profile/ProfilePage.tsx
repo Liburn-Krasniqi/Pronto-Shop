@@ -8,7 +8,10 @@ export const ProfilePage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { isAuthenticated, loading, userData } = useAuth();
+  const { isAuthenticated, loading, userData, userType } = useAuth();
+
+  if(isAuthenticated && userType === 'vendor') navigate('/vendor/profile');
+
 
   const profileEditPage = () => {
     navigate('/editProfilePage');
