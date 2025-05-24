@@ -12,6 +12,7 @@ const Layout = () => {
       {userType === "vendor" ? <VendorMainNavigation /> : <MainNavigation />}
       
       <main className="content px-5 py-5">
+        
         <Outlet /> {/* This renders the current route's component */}
       </main>
       <Footer />

@@ -232,8 +232,8 @@ export class ProductController {
       },
     },
   })
-  findAll(@Query() query: ProductQueryParams = {}) {
-    return this.productService.findAll(query);
+  async findAll(@Query() query: ProductQueryParams = {}) {
+    return await this.productService.findAll(query);
   }
 
   @Get(':id')
