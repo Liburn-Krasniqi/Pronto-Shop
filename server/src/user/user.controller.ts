@@ -29,6 +29,7 @@ import { PrismaService } from '../prisma/prisma.service';
 export class UserController {
   constructor(private UserService: UserService,private prisma: PrismaService) {}
 
+  @UseGuards(JwtGuard)
   @Get('me')
   @ApiOperation({ summary: 'Get current user profile with address' })
   @ApiResponse({ status: 200, description: 'User data with address returned' })

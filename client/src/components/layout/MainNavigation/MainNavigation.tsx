@@ -1,8 +1,11 @@
 import { Col, Row, Navbar, Nav, Container, Offcanvas } from "react-bootstrap";
 import { NavItemWithIcon, CustomNavDropdown, SearchBar } from "../../UI";
 import classes from "./MainNavigation.module.css";
+import { useAuth } from "../../../hooks/useAuth";
 
 export const MainNavigation: React.FC = () => {
+  const { isAuthenticated, userData, userType, logout } = useAuth();
+
   return (
     <Navbar
       expand="md"
@@ -76,19 +79,39 @@ export const MainNavigation: React.FC = () => {
                     <CustomNavDropdown
                       title={
                         <span className="text-start text-white">
-                          Hello, sign in {""}
-                          <span className="d-md-none"> </span>
-                          <br className="d-none d-md-inline" />
-                          <strong>{"Accounts & Lists"}</strong>
+                          {isAuthenticated ? (
+                            <span>
+                              Hello, {userType === "user" ? userData.firstName: userData.name}  {""}
+                              <span className="d-md-none"> </span>
+                              <br className="d-none d-md-inline" />
+                              <strong>{"Accounts & Lists"}</strong>
+                            </span>
+                          ) : (
+                            <span>
+                              Hello, Guest  {""}
+                              <span className="d-md-none"> </span>
+                              <br className="d-none d-md-inline" />
+                              <strong>{"Sign In"}</strong>
+                            </span>
+                          )}
                         </span>
                       }
-                      items={[
-                        { to: "/", label: "Bookmarks" },
-                        { to: "/Users", label: "Users (temporarily here)" },
-                        { to: "/", label: "Sign In" },
+                      items={isAuthenticated ? userType === "user" ? [
+                        { to: "/", label: "Buy" },
+                        { to: "/profilePage", label: "Your Profile" },
+                        { to: "/", label: "Log Out", onClick: logout },
+                      ] : [
+                        { to: "/", label: "Add Product" },
+                        { to: "/", label: "Your Business" },
+                        { to: "/", label: "Log Out", onClick: logout },
+                        
+                      ]: [
+                        { to: "/login", label: "Sign In as Client" },
+                        { to: "/vendor/signin", label: "Sign In as Business" },
                       ]}
                       className="text-md-center text-start"
                     />
+                    {/* <Nav.Link onClick={logout}>Log Out</Nav.Link> */}
                   </Nav.Item>
 
                   <Nav.Item

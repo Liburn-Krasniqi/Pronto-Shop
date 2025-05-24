@@ -21,7 +21,7 @@ interface EditProfileForm {
 
 export const EditProfilePage: React.FC = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, loading, userData } = useAuth();
+  const { isAuthenticated, loading, userData, userType } = useAuth();
   const [form, setForm] = useState<EditProfileForm>({
     firstName: '',
     lastName: '',
@@ -37,6 +37,8 @@ export const EditProfilePage: React.FC = () => {
 
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  if(isAuthenticated && userType === 'vendor') navigate('/vendor/profile');
 
   useEffect(() => {
     if (userData) {
