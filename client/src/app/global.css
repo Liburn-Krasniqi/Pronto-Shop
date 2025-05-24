@@ -1,41 +1,58 @@
 body {
-    background-color: #F1F1E8;
+  background-color: #F1F1E8 !important;
 }
 
 /* Color schema/palette */
 .background-1 {
-  background-color: #206A5D;
+background-color: #206A5D !important;
 }
-  
+
 .background-2 {
-  background-color: #81B214;
+background-color: #81B214 !important;
 }
-  
+
 .background-3 {
-  background-color: #BFDCAE;
+background-color: #BFDCAE !important;
 }
-  
+
 .background-4 {
-  background-color: #F1F1E8;
+background-color: #F1F1E8 !important;
+}
+
+.background-white{
+color: white !important;
 }
 
 .color-1 {
-  color: #206A5D;
+color: #206A5D !important;
 }
 
 .color-2 {
- color: #81B214;
+color: #81B214 !important;
 }
 
 .color-3 {
- color: #BFDCAE;
+color: #BFDCAE !important;
 }
 
 .color-4 {
- color: #F1F1E8;
+color: #F1F1E8 !important;
+}
+
+.color-white{
+color: white !important;
 }
 
 /*Bottom Shadow for Cards and Froms or whatever*/
 .shadow-bottom {
-  box-shadow: 0px 6px 6px -2px rgba(0, 0, 0, 0.35);
+box-shadow: 0px 6px 6px -2px rgba(0, 0, 0, 0.35);
+}
+
+
+/* For buttons */
+
+.btn.background-1:hover {
+background-color: #164a41 !important;
+transform: scale(0.97);
+transition: all 0.1s ease;
 }

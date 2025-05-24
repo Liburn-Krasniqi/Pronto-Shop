@@ -17,7 +17,7 @@ export class ProductService {
             description: dto.description,
             price: dto.price,
             discountPrice: dto.discountPrice,
-            vendorid: dto.vendorid,
+            vendorid: Number(dto.vendorid),
             imageURL: dto.imageURL,
             subcategory: {
               connect: dto.subcategory.map((id) => ({ id })),
@@ -32,8 +32,8 @@ export class ProductService {
         const inventory = await tx.inventory.create({
           data: {
             productId: product.id,
-            stockQuantity: iDto.stockQuantity, // or some default
-            restockDate: iDto.restockDate, // or a default date
+            stockQuantity: Number(iDto.stockQuantity), // or some default
+            restockDate: new Date(String(iDto.restockDate)).toISOString(), // or a default date
           },
         });
         return {
@@ -48,7 +48,7 @@ export class ProductService {
     }
   }
 
-  findAll(query: ProductQueryParams = {}) {
+  async findAll(query: ProductQueryParams = {}) {
     const where: any = {};
 
     // Name filter (case insensitive contains)
@@ -94,15 +94,15 @@ export class ProductService {
 
     const skip = query.page ? (query.page - 1) * (query.limit || 10) : 0;
 
-    return this.prisma.product.findMany({
+    return await this.prisma.product.findMany({
       where,
       include: {
         subcategory: true,
-        Inventory: true, // Include inventory if needed. Probably not.
+        Inventory: true,
       },
-      skip,
+      skip: query.skip,
       take: query.limit,
-      orderBy,
+      orderBy: query.orderBy,
     });
   }
 
@@ -115,51 +115,57 @@ export class ProductService {
   }
 
   async update(id: string, dto: UpdateProductDto) {
-    return this.prisma.$transaction(async (tx) => {
-      // Update product
-      const updatedProduct = await tx.product.update({
-        where: { id },
-        data: {
-          name: dto.name,
-          description: dto.description,
-          price: dto.price,
-          discountPrice: dto.discountPrice,
-          imageURL: dto.imageURL,
-          vendorid: dto.vendorid,
-          subcategory: dto.subcategory
-            ? {
-                set: dto.subcategory.map((id) => ({ id })),
-              }
-            : undefined,
-        },
-        include: {
-          subcategory: true,
-          Inventory: true,
-        },
-      });
-
-      // Update inventory if provided
-      if (dto.inventory) {
-        await tx.inventory.upsert({
-          where: { productId: id },
-          create: {
-            productId: id,
-            stockQuantity: dto.inventory.stockQuantity ?? 0,
-            restockDate: dto.inventory.restockDate
-              ? new Date(dto.inventory.restockDate)
-              : null,
+    try {
+      return this.prisma.$transaction(async (tx) => {
+        // Update product
+        const updatedProduct = await tx.product.update({
+          where: { id },
+          data: {
+            name: dto.name,
+            description: dto.description,
+            price: dto.price,
+            discountPrice: dto.discountPrice,
+            imageURL: dto.imageURL,
+            vendorid: dto.vendorid,
+            subcategory: dto.subcategory
+              ? {
+                  set: dto.subcategory.map((id) => ({ id })),
+                }
+              : undefined,
           },
-          update: {
-            stockQuantity: dto.inventory.stockQuantity,
-            restockDate: dto.inventory.restockDate
-              ? new Date(dto.inventory.restockDate)
-              : null,
+          include: {
+            subcategory: true,
+            Inventory: true,
           },
         });
-      }
 
-      return updatedProduct;
-    });
+        // Update inventory if provided
+        if (dto.inventory) {
+          await tx.inventory.upsert({
+            where: { productId: id },
+            create: {
+              productId: id,
+              stockQuantity: dto.inventory.stockQuantity ?? 0,
+              restockDate: dto.inventory.restockDate
+                ? new Date(dto.inventory.restockDate)
+                : null,
+            },
+            update: {
+              stockQuantity: dto.inventory.stockQuantity,
+              restockDate: dto.inventory.restockDate
+                ? new Date(dto.inventory.restockDate)
+                : null,
+            },
+          });
+        }
+
+        return updatedProduct;
+      });
+    } catch (error) {
+      // Proper error handling
+      console.error('Error update product:', error);
+      throw new Error('Failed to update product');
+    }
   }
 
   remove(id: string) {

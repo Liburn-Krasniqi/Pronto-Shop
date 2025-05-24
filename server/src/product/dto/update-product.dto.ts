@@ -4,7 +4,7 @@ import { IsOptional, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { CreateInventoryDto } from '../../inventory/dto';
 
-export class UpdateProductDto extends PartialType(CreateProductDto) {
+export class UpdateProductDto extends CreateProductDto {
   @IsOptional()
   @ValidateNested()
   @Type(() => CreateInventoryDto)
