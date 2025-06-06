@@ -87,14 +87,23 @@ const fetchWithRetry = async (
 export const apiClient = {
   get: async (url: string) => fetchWithRetry(url, { method: "GET" }),
 
-  post: async (url: string, body: any) =>
-    fetchWithRetry(url, {
+  post: async (url: string, body: any) => {
+    // If body is FormData, don't set Content-Type header
+    if (body instanceof FormData) {
+      return fetchWithRetry(url, {
+        method: "POST",
+        body: body,
+      });
+    }
+    // Otherwise, send as JSON
+    return fetchWithRetry(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(body),
-    }),
+    });
+  },
 
   put: async (url: string, body: any) =>
     fetchWithRetry(url, {

@@ -7,3 +7,5 @@ export * from "./CustomTable";
 export * from "./ProductCard";
 export * from "./NavItemWithIcon";
 export * from "./CustomNavDropDown";
+export * from "./CustomModal";
+export * from "./SVGs/SVG";

@@ -28,6 +28,7 @@ model User {
   phoneNumbers PhoneNumber[]
   addresses    UserAddress?
   RefreshToken RefreshToken[]
+  orders       Order[]
 
   @@map("users")
 }
@@ -107,18 +108,24 @@ model Vendor {
   @@map("vendors")
 }
 
+enum AccountType {
+  user
+  vendor
+  admin
+}
+
 model RefreshToken {
-  id        Int      @id @default(autoincrement())
-  token     String   @unique
+  id        Int         @id @default(autoincrement())
+  token     String      @unique
   userId    Int?
   vendorId  Int?
-  user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  vendor    Vendor?   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
-  type      String    //user or vendor
+  user      User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vendor    Vendor?     @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  type      AccountType
   expiresAt DateTime
-  revoked   Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  revoked   Boolean     @default(false)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
 }
 
 model Category {
@@ -165,6 +172,33 @@ model Product {
   Vendor      Vendor        @relation(fields: [vendorid], references: [id], onDelete: Cascade)
   subcategory Subcategory[]
   Inventory   Inventory?
+  orderItems  OrderItem[]
 
   @@index([id]) //indexing for optimized queries
+}
+
+model Order {
+  id              Int         @id @default(autoincrement())
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  userId          Int
+  status          String      @default("pending")
+  total           Float
+  paymentIntentId String?
+  items           OrderItem[]
+  user            User        @relation(fields: [userId], references: [id])
+
+  @@map("Order")
+}
+
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  productId String
+  quantity  Int
+  price     Float
+  order     Order    @relation(fields: [orderId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
+
+  @@map("OrderItem")
 }

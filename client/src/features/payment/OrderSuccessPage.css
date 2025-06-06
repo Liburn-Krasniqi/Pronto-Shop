@@ -1,0 +1,76 @@
+.success-container {
+  max-width: 600px;
+  margin: 4rem auto;
+  text-align: center;
+  padding: 2rem;
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.success-icon {
+  width: 64px;
+  height: 64px;
+  color: #10B981;
+  margin-bottom: 1.5rem;
+}
+
+.success-container h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #1F2937;
+  margin-bottom: 1rem;
+}
+
+.success-container p {
+  color: #6B7280;
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+.button-group {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.continue-shopping,
+.view-orders {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.continue-shopping {
+  background-color: #206a5d;
+  color: white;
+  border: none;
+}
+
+.continue-shopping:hover {
+  background-color: #1a5549;
+}
+
+.view-orders {
+  background-color: white;
+  color: #206a5d;
+  border: 1px solid #206a5d;
+}
+
+.view-orders:hover {
+  background-color: #F3F4F6;
+}
+
+@media (max-width: 640px) {
+  .button-group {
+    flex-direction: column;
+  }
+
+  .continue-shopping,
+  .view-orders {
+    width: 100%;
+  }
+} 
