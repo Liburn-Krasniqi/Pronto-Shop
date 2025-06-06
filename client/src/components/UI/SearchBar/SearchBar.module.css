@@ -1,13 +1,16 @@
 .search{
   max-width: 500px;
+  position: relative;
+  width: 100%;
 }
 
 input.searchbar{
-    height: 50px;
-    font-size: 32px;
+    height: 40px;
+    font-size: 16px;
     font-weight: 350;
     box-shadow: inset 0px 4px 4px 0px rgba(0, 0, 0, 25%);
     border: none;
+    width: 100%;
 }
 
 /* color of the "  Search" placeholder */
@@ -26,4 +29,76 @@ input.searchbar:-ms-input-placeholder { /* IE 10+ */
 }
 input.searchbar:-moz-placeholder { /* Firefox 18- */
   color: #8C8C8C;
+}
+
+/* Dropdown styles */
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 8px;
+  margin-top: 4px;
+  z-index: 1000;
+  max-height: 400px;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  gap: 12px;
+}
+
+.dropdownItem:hover {
+  background-color: #f8f9fa;
+}
+
+.imageNameContainer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.dropdownImage {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.dropdownTitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdownPrice {
+  font-size: 14px;
+  color: #206A5D;
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.viewAll {
+  border-top: 1px solid #eee;
+  justify-content: center;
+  color: #206A5D;
+  font-weight: 500;
+  padding: 12px;
+}
+
+.viewAll:hover {
+  background-color: #f0f0f0;
 }

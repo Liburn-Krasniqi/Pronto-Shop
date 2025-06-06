@@ -81,7 +81,7 @@ export const VendorMainNavigation: React.FC = () => {
                       }
                       items={isAuthenticated ? userType === "user" ? [
                         { to: "/", label: "Buy" },
-                        { to: "/profilePage", label: "Your Profile" },
+                        { to: "user/profile", label: "Your Profile" },
                         { to: "/", label: "Log Out", onClick: logout },
                       ] : [
                         { to: "/", label: "Add Product" },

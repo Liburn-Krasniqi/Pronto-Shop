@@ -1,1 +1,0 @@
-export { EditProfilePage } from './EditProfile'

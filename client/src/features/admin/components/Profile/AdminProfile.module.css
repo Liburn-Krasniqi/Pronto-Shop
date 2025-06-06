@@ -1,0 +1,109 @@
+.profileContainer {
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+.profileCard {
+  max-width: 800px;
+  margin: 0 auto;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  color: #206A5D;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: #666;
+  font-size: 1rem;
+}
+
+.form {
+  padding: 0 1rem;
+}
+
+.section {
+  margin-bottom: 2rem;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.sectionIcon {
+  font-size: 1.5rem;
+  color: #81B214;
+  margin-right: 0.75rem;
+}
+
+.sectionHeader h2 {
+  font-size: 1.25rem;
+  color: #333;
+  margin: 0;
+}
+
+.divider {
+  margin: 2rem 0;
+  border-color: #e8e8e8;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e8e8e8;
+}
+
+/* Ant Design overrides */
+:global(.ant-form-item-label > label) {
+  color: #666;
+  font-weight: 500;
+}
+
+:global(.ant-input),
+:global(.ant-input-password) {
+  border-radius: 0.5rem;
+  border-color: #d9d9d9;
+}
+
+:global(.ant-input:hover),
+:global(.ant-input-password:hover) {
+  border-color: #81B214;
+}
+
+:global(.ant-input:focus),
+:global(.ant-input-password:focus) {
+  border-color: #81B214;
+  box-shadow: 0 0 0 2px rgba(129, 178, 20, 0.1);
+}
+
+:global(.ant-btn-primary) {
+  background-color: #81B214;
+  border-color: #81B214;
+  border-radius: 0.5rem;
+  height: 40px;
+  padding: 0 2rem;
+}
+
+:global(.ant-btn-primary:hover),
+:global(.ant-btn-primary:focus) {
+  background-color: #206A5D !important;
+  border-color: #206A5D !important;
+  box-shadow: 0 0 0 2px rgba(32, 106, 93, 0.2) !important;
+}
+
+:global(.ant-btn-primary:active) {
+  background-color: #164a41 !important;
+  border-color: #164a41 !important;
+} 

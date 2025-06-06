@@ -175,4 +175,14 @@ export class ProductService {
       },
     });
   }
+
+  async count() {
+    try {
+      const count = await this.prisma.product.count();
+      return { count };
+    } catch (error) {
+      console.error('Error counting products:', error);
+      return { count: 0 };
+    }
+  }
 }

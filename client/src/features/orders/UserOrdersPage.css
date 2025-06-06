@@ -1,0 +1,47 @@
+.badge {
+  padding: 0.5em 0.75em;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.375rem;
+}
+
+.bg-success {
+  background-color: #10B981 !important;
+}
+
+.bg-warning {
+  background-color: #F59E0B !important;
+}
+
+.bg-danger {
+  background-color: #EF4444 !important;
+}
+
+.bg-secondary {
+  background-color: #6B7280 !important;
+}
+
+.table {
+  margin-bottom: 0;
+}
+
+.table th {
+  font-weight: 600;
+  color: #1F2937;
+  background-color: #F9FAFB;
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+@media (max-width: 768px) {
+  .table {
+    font-size: 0.875rem;
+  }
+  
+  .badge {
+    padding: 0.25em 0.5em;
+    font-size: 0.75rem;
+  }
+} 

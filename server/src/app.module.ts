@@ -10,6 +10,12 @@ import { CategoryModule } from './category/category.module';
 import { SubcategoryModule } from './subcategory/subcategory.module';
 import { ProductModule } from './product/product.module';
 import { InventoryModule } from './inventory/inventory.module';
+import { OrderModule } from './order/order.module';
+import { PaymentModule } from './payment/payment.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+import { UploadModule } from './upload/upload.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -25,6 +31,13 @@ import { InventoryModule } from './inventory/inventory.module';
     SubcategoryModule,
     ProductModule,
     InventoryModule,
+    OrderModule,
+    PaymentModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/uploads',
+    }),
+    UploadModule,
   ],
 })
 export class AppModule {}

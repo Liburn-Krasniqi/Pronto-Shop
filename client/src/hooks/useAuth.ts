@@ -5,7 +5,7 @@ import {jwtDecode} from 'jwt-decode';
 interface DecodedToken {
   sub: number;
   email: string;
-  type: 'user' | 'vendor';
+  type: 'user' | 'vendor' | 'admin';
   exp: number;
 }
 
@@ -15,7 +15,7 @@ export const useAuth = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [userData, setUserData] = useState<any>(null);
-  const [userType, setUserType] = useState<'user' | 'vendor' | null>(null);
+  const [userType, setUserType] = useState<'user' | 'vendor' | 'admin' | null>(null);
 
   const refreshAccessToken = async () => {
     try {
@@ -53,7 +53,6 @@ export const useAuth = () => {
   };
 
   const checkAuth = async () => {
-
     let storedToken = Cookies.get('access_token') ?? null;
     
     if (!storedToken) {
@@ -63,18 +62,22 @@ export const useAuth = () => {
 
     try {
       // First try with current token
-     
       const decoded: DecodedToken = jwtDecode(storedToken);
-      const endpoint = decoded.type === 'user' ? 'users/me' : 'vendor/me';
+      let endpoint = 'users/me';
+      
+      if (decoded.type === 'vendor') {
+        endpoint = 'vendor/me';
+      } else if (decoded.type === 'admin') {
+        endpoint = 'users/admin/me';
+      }
+      
       setUserType(decoded.type);
       
       let response = await fetch(`http://localhost:3333/${endpoint}`, {
         headers: {
           Authorization: `Bearer ${storedToken}`,
         },
-
       });
-      
 
       // If token expired, try to refresh
       if (response.status === 401) {
@@ -83,7 +86,13 @@ export const useAuth = () => {
         if (!storedToken) throw new Error("No token to decode");
         const decodedRefresh: DecodedToken = jwtDecode(storedToken);
 
-        const refreshedEndpoint = decodedRefresh.type === 'user' ? 'users/me' : 'vendor/me';
+        let refreshedEndpoint = 'users/me';
+        if (decodedRefresh.type === 'vendor') {
+          refreshedEndpoint = 'vendor/me';
+        } else if (decodedRefresh.type === 'admin') {
+          refreshedEndpoint = 'users/admin/me';
+        }
+        
         setUserType(decodedRefresh.type);
 
         response = await fetch(`http://localhost:3333/${refreshedEndpoint}`, {
@@ -95,7 +104,6 @@ export const useAuth = () => {
 
       if (response.ok) {
         const data = await response.json();
-        // console.log(data);
         setToken(storedToken);
         setIsAuthenticated(true);
         setUserData(data);
@@ -106,11 +114,13 @@ export const useAuth = () => {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Authentication failed');
       setIsAuthenticated(false);
+      // Clear tokens on error
+      Cookies.remove('access_token');
+      Cookies.remove('refresh_token');
     } finally {
       setLoading(false);
     }
   };
-
 
   const logout = () => {
     Cookies.remove('access_token');

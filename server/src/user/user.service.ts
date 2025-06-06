@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { UpdateUserDto } from "./dto/updateUser.dto";
 import * as argon from 'argon2';
@@ -33,15 +33,14 @@ export class UserService{
         throw new Error('User not found');
       }
     
-      // Check if CurrentPassword is provided
-      // if (!updateData.currentPassword) {
-      //   throw new Error('Current password is required');
-      // }
-    
-      // const pwMatches = await argon.verify(user.hash, updateData.currentPassword);
-      // if (!pwMatches) {
-      //   throw new Error('Current password is incorrect');
-      // }
+      // Validate passwords match if both are provided
+      if (updateData.password && updateData.confirmPassword) {
+        if (updateData.password !== updateData.confirmPassword) {
+          throw new HttpException('Passwords do not match', HttpStatus.BAD_REQUEST);
+        }
+      } else if (updateData.password || updateData.confirmPassword) {
+        throw new HttpException('Both password and confirm password are required', HttpStatus.BAD_REQUEST);
+      }
     
       const updatePayload: any = {
         updatedAt: new Date(),
@@ -50,27 +49,34 @@ export class UserService{
       if (updateData.firstName) updatePayload.firstName = updateData.firstName;
       if (updateData.lastName) updatePayload.lastName = updateData.lastName;
       if (updateData.email) updatePayload.email = updateData.email;
-    
-      // if (updateData.newPassword) {
-      //   updatePayload.hash = await argon.hash(updateData.newPassword);
-      // }
+      if (updateData.password) {
+        updatePayload.hash = await argon.hash(updateData.password);
+      }
 
       if (updateData.addresses) {
         return this.prisma.$transaction(async (tx) => {
             const updatedUser = await tx.user.update({
                 where: { id: userId },
                 data: updatePayload,
+                include: { addresses: true }
             });
 
-            await this.handleAddressUpdate(tx, userId, updateData.addresses?? {});
+            if (updateData.addresses) {
+                await this.handleAddressUpdate(tx, userId, updateData.addresses);
+            }
             
-            return updatedUser;
+            // Return the complete updated user data
+            return this.prisma.user.findUnique({
+                where: { id: userId },
+                include: { addresses: true }
+            });
         });
       }
     
       return this.prisma.user.update({
         where: { id: userId },
         data: updatePayload,
+        include: { addresses: true }
       });
     }
     
@@ -146,5 +152,11 @@ export class UserService{
         };
     }
 
-    
+    async count() {
+        return this.prisma.user.count({
+            where: {
+                role: 'user'
+            }
+        });
+    }
 }

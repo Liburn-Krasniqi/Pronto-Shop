@@ -236,6 +236,31 @@ export class ProductController {
     return await this.productService.findAll(query);
   }
 
+  @Get('count')
+  @ApiOperation({ summary: 'Get total number of products' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Successfully retrieved product count',
+    schema: {
+      type: 'object',
+      properties: {
+        count: {
+          type: 'number',
+          description: 'Total number of products'
+        }
+      }
+    }
+  })
+  async count() {
+    try {
+      const count = await this.productService.count();
+      return { count: count.count };
+    } catch (error) {
+      console.error('Error in product count:', error);
+      return { count: 0 };
+    }
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get a single product by ID' })
   @ApiParam({
