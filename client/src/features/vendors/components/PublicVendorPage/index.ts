@@ -1,0 +1,1 @@
+export { PublicVendorPage } from './PublicVendorPage'; 

@@ -1,5 +1,9 @@
 :global(.dropdown-toggle::after) {
+    display: block !important;
     color: white;
+    margin-left: 10px;
+    align-self: center !important;
+    margin-top: 1.7em;
 }
   
 .navLinkNoUnderline {
@@ -28,4 +32,8 @@
     width: auto !important;
     min-width: auto !important;
     max-width: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
 }

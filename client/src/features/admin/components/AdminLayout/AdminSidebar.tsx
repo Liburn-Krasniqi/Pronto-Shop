@@ -12,20 +12,30 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../../hooks/useAuth";
+import { ConfirmationDialog } from "../../../../components/UI";
 import classes from "./AdminSidebar.module.css";
 
 export const AdminSidebar: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { 
+    logoutWithConfirmation,
+    showLogoutConfirm,
+    handleLogoutConfirm,
+    handleLogoutCancel
+  } = useAuth();
 
   const isActive = (path: string) => {
     return location.pathname === path;
   };
 
   const handleLogout = () => {
-    logout();
-    navigate('/admin/login');
+    logoutWithConfirmation();
+  };
+
+  const onConfirmLogout = () => {
+    handleLogoutConfirm();
+    navigate('/');
   };
 
   return (
@@ -86,6 +96,16 @@ export const AdminSidebar: React.FC = () => {
 
         <Nav.Item>
           <Link
+            to="/admin/gift-cards"
+            className={`d-flex align-items-center ${classes.navLink} ${isActive('/admin/gift-cards') ? classes.active : ''}`}
+          >
+            <FontAwesomeIcon icon={faTags} className="me-2" />
+            Gift Cards
+          </Link>
+        </Nav.Item>
+
+        <Nav.Item>
+          <Link
             to="/admin/orders"
             className={`d-flex align-items-center ${classes.navLink} ${isActive('/admin/orders') ? classes.active : ''}`}
           >
@@ -111,6 +131,17 @@ export const AdminSidebar: React.FC = () => {
           Logout
         </button>
       </div>
+
+      <ConfirmationDialog
+        show={showLogoutConfirm}
+        onHide={handleLogoutCancel}
+        onConfirm={onConfirmLogout}
+        title="Confirm Logout"
+        message="Are you sure you want to log out?"
+        confirmText="Log Out"
+        cancelText="Cancel"
+        variant="success"
+      />
     </div>
   );
 }; 

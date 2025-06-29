@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Modal, Form, Alert } from 'react-bootstrap';
+import { Button, Modal, Form, Alert } from 'react-bootstrap';
 import { apiClient } from '../../../../api/client';
 import { FaPlus, FaMinus } from 'react-icons/fa';
+import { EnhancedTable, TableColumn } from '../../../../components/UI';
 
 interface Subcategory {
   id?: number;
@@ -207,6 +208,50 @@ export const CategoriesPage: React.FC = () => {
     }
   };
 
+  // Define table columns
+  const columns: TableColumn<Category>[] = [
+    {
+      key: 'name',
+      displayName: 'Name',
+      sortable: true,
+      searchable: true,
+      width: '20%'
+    },
+    {
+      key: 'description',
+      displayName: 'Description',
+      sortable: true,
+      searchable: true,
+      width: '30%',
+      render: (value) => (
+        <div style={{ maxWidth: '250px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {value}
+        </div>
+      )
+    },
+    {
+      key: 'subcategories',
+      displayName: 'Subcategories',
+      sortable: false,
+      searchable: true,
+      width: '25%',
+      transform: (category) => category.subcategories?.map(sub => sub.name).join(', ') || 'No subcategories',
+      render: (value) => (
+        <div style={{ maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {value}
+        </div>
+      )
+    },
+    {
+      key: 'createdAt',
+      displayName: 'Created At',
+      sortable: true,
+      searchable: false,
+      width: '15%',
+      render: (value) => new Date(value).toLocaleDateString()
+    }
+  ];
+
   if (loading) return <div className="text-center p-5">Loading...</div>;
 
   return (
@@ -234,53 +279,40 @@ export const CategoriesPage: React.FC = () => {
           <p className="text-muted">There are currently no categories in the system.</p>
         </div>
       ) : (
-        <Table striped bordered hover responsive>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Description</th>
-              <th>Subcategories</th>
-              <th>Created At</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {categories.map((category) => (
-              <tr key={category.id}>
-                <td>{category.name}</td>
-                <td>{category.description}</td>
-                <td>
-                  {category.subcategories && category.subcategories.length > 0 ? (
-                    <ul className="mb-0 ps-3">
-                      {category.subcategories.map((sub) => (
-                        <li key={sub.id}>{sub.name}</li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <em>No subcategories</em>
-                  )}
-                </td>
-                <td>{new Date(category.createdAt).toLocaleDateString()}</td>
-                <td>
-                  <Button
-                    size="sm"
-                    className="me-2 background-1 color-white border-0"
-                    onClick={() => handleEditClick(category)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={() => handleDeleteClick(category)}
-                  >
-                    Delete
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
+        <EnhancedTable
+          data={categories}
+          columns={columns}
+          loading={loading}
+          itemsPerPage={15}
+          searchable={true}
+          sortable={true}
+          emptyMessage="There are currently no categories in the system."
+          emptyIcon={<FaPlus size={100} className="text-muted" />}
+          actions={(category) => (
+            <div className="d-flex gap-1">
+              <Button
+                size="sm"
+                className="background-1 color-white border-0"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEditClick(category);
+                }}
+              >
+                Edit
+              </Button>
+              <Button
+                variant="danger"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteClick(category);
+                }}
+              >
+                Delete
+              </Button>
+            </div>
+          )}
+        />
       )}
 
       {/* Create Modal */}
@@ -479,7 +511,7 @@ export const CategoriesPage: React.FC = () => {
               <Button variant="secondary" onClick={() => setShowEditModal(false)}>
                 Cancel
               </Button>
-              <Button variant="primary" type="submit">
+              <Button variant="success" type="submit">
                 Save Changes
               </Button>
             </div>

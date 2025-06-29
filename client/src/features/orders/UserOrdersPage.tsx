@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Table } from 'react-bootstrap';
+import { Badge } from 'react-bootstrap';
 import { apiClient } from '../../api/client';
 import { useAuth } from '@/hooks/useAuth';
+import { OrderDetailsModal } from '@/components/UI/OrderDetailsModal';
+import { EnhancedTable, TableColumn } from '@/components/UI';
+import { FaShoppingCart } from 'react-icons/fa';
 import './UserOrdersPage.css';
 
 interface OrderItem {
@@ -11,6 +14,7 @@ interface OrderItem {
   price: number;
   product: {
     name: string;
+    imageURL?: string[];
   };
 }
 
@@ -22,12 +26,16 @@ interface Order {
   createdAt: string;
   updatedAt: string;
   items: OrderItem[];
+  shippingAddress?: string;
+  paymentIntentId?: string;
 }
 
 export const UserOrdersPage: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [showModal, setShowModal] = useState(false);
   const { userData } = useAuth();
 
   useEffect(() => {
@@ -67,6 +75,106 @@ export const UserOrdersPage: React.FC = () => {
     ).join(', ');
   };
 
+  const getStatusBadgeVariant = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'completed':
+        return 'success';
+      case 'pending':
+        return 'warning';
+      case 'processing':
+        return 'info';
+      case 'shipped':
+        return 'primary';
+      case 'cancelled':
+        return 'danger';
+      default:
+        return 'secondary';
+    }
+  };
+
+  const handleOrderClick = (order: Order) => {
+    setSelectedOrder(order);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedOrder(null);
+  };
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(amount);
+  };
+
+  // Define table columns
+  const columns: TableColumn<Order>[] = [
+    {
+      key: 'id',
+      displayName: 'Order ID',
+      sortable: true,
+      searchable: false,
+      width: '10%',
+      render: (value) => `#${value}`
+    },
+    {
+      key: 'items',
+      displayName: 'Items',
+      sortable: false,
+      searchable: true,
+      width: '35%',
+      transform: (order) => formatOrderItems(order.items),
+      render: (value) => (
+        <div style={{ maxWidth: '350px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {value}
+        </div>
+      )
+    },
+    {
+      key: 'total',
+      displayName: 'Total',
+      sortable: true,
+      searchable: false,
+      width: '12%',
+      render: (value) => formatCurrency(Number(value))
+    },
+    {
+      key: 'status',
+      displayName: 'Status',
+      sortable: true,
+      searchable: true,
+      width: '12%',
+      filterOptions: [
+        { value: 'pending', label: 'Pending' },
+        { value: 'processing', label: 'Processing' },
+        { value: 'shipped', label: 'Shipped' },
+        { value: 'completed', label: 'Completed' },
+        { value: 'cancelled', label: 'Cancelled' }
+      ],
+      render: (value) => (
+        <Badge bg={getStatusBadgeVariant(value)} className="status-badge">
+          {value.toUpperCase()}
+        </Badge>
+      )
+    },
+    {
+      key: 'createdAt',
+      displayName: 'Date',
+      sortable: true,
+      searchable: false,
+      width: '15%',
+      render: (value) => new Date(value).toLocaleDateString()
+    }
+  ];
+
+  // Action function for the table
+  const handleViewOrder = (order: Order) => {
+    setSelectedOrder(order);
+    setShowModal(true);
+  };
+
   if (loading) return <div className="text-center p-5">Loading...</div>;
   if (error) return <div className="text-center p-5 text-danger">{error}</div>;
 
@@ -74,48 +182,35 @@ export const UserOrdersPage: React.FC = () => {
     <div className="p-4">
       <h2 className="mb-4">My Orders</h2>
 
-      {orders.length === 0 ? (
-        <div className="text-center p-5">
-          <div className="mb-4">
-            <img 
-              src="http://localhost:3333/uploads/Software-Image-removebg-preview.png" 
-              alt="No Orders" 
-              style={{ width: '500px', height: 'auto', opacity: 0.8 }}
-            />
-          </div>
-          <h3 className="text-muted mb-3">No Orders Found</h3>
-          <p className="text-muted mb-4">You haven't placed any orders yet.</p>
-        </div>
-      ) : (
-        <Table striped bordered hover responsive>
-          <thead>
-            <tr>
-              <th>Order ID</th>
-              <th>Items</th>
-              <th>Total</th>
-              <th>Status</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orders.map((order) => (
-              <tr key={order.id}>
-                <td>#{order.id}</td>
-                <td>{formatOrderItems(order.items)}</td>
-                <td>${order.total.toFixed(2)}</td>
-                <td>
-                  <span className={`badge bg-${order.status === 'completed' ? 'success' : 
-                    order.status === 'pending' ? 'warning' : 
-                    order.status === 'cancelled' ? 'danger' : 'secondary'}`}>
-                    {order.status}
-                  </span>
-                </td>
-                <td>{new Date(order.createdAt).toLocaleDateString()}</td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      )}
+      <EnhancedTable
+        data={orders}
+        columns={columns}
+        loading={loading}
+        itemsPerPage={10}
+        searchable={true}
+        sortable={true}
+        emptyMessage="You haven't placed any orders yet. Start shopping to see your order history!"
+        emptyIcon={<FaShoppingCart size={100} className="text-muted" />}
+        actions={(order) => (
+          <button
+            className="btn btn-sm btn-outline-success"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleViewOrder(order);
+            }}
+            title="View Order Details"
+          >
+            View Details
+          </button>
+        )}
+      />
+
+      {/* Order Details Modal */}
+      <OrderDetailsModal
+        order={selectedOrder}
+        show={showModal}
+        onHide={handleCloseModal}
+      />
     </div>
   );
 }; 

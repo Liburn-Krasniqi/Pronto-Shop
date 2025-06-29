@@ -88,12 +88,14 @@ export default function PaymentPage() {
   const navigate = useNavigate();
   const { userData } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [orderLoading, setOrderLoading] = useState(true);
   const [order, setOrder] = useState<OrderDetails | null>(null);
   const [clientSecret, setClientSecret] = useState<string>('');
   const [total, setTotal] = useState<number>(0);
 
   useEffect(() => {
     const fetchOrder = async () => {
+      setOrderLoading(true);
       try {
         const response = await apiClient.get(`/orders/${orderId}`);
         console.log('Order response:', response);
@@ -104,6 +106,8 @@ export default function PaymentPage() {
       } catch (error: any) {
         toast.error('Failed to fetch order details');
         navigate('/cart');
+      } finally {
+        setOrderLoading(false);
       }
     };
 
@@ -112,8 +116,19 @@ export default function PaymentPage() {
 
   useEffect(() => {
     const createPaymentIntent = async () => {
+      // Only create payment intent if order is loaded and total is known
+      if (orderLoading || !order) return;
+      
       try {
         const amount = Number(total);
+        
+        // If total is $0, skip payment and go to success page
+        if (amount === 0) {
+          toast.success('Order completed successfully! No payment required.');
+          navigate('/order-success');
+          return;
+        }
+        
         const response = await apiClient.post(`/orders/${orderId}/payment`, {
           amount: amount,
           paymentDetails: {}
@@ -137,13 +152,30 @@ export default function PaymentPage() {
       }
     };
 
-    if (orderId && total > 0) {
+    if (orderId && total >= 0 && !orderLoading) {
       createPaymentIntent();
     }
-  }, [orderId, total, navigate]);
+  }, [orderId, total, navigate, orderLoading, order]);
 
-  if (!order || !clientSecret) {
+  if (orderLoading || !order) {
     return <div className="loading">Loading...</div>;
+  }
+
+  // If total is $0 and we have the order, redirect to success
+  if (total === 0 && order) {
+    return (
+      <div className="container">
+        <div className="loading">
+          <h2>Processing your order...</h2>
+          <p>No payment required. Redirecting to order confirmation...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If we have an order with total > 0 but no client secret yet, show loading
+  if (order && total > 0 && !clientSecret) {
+    return <div className="loading">Loading payment form...</div>;
   }
 
   const appearance: Appearance = {

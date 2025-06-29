@@ -12,6 +12,10 @@ interface Product {
   Price: number;
   Discount_Price: number;
   Quantity: number;
+  reviewStats?: {
+    averageRating: number;
+    totalReviews: number;
+  };
 }
 
 export function SearchResults() {
@@ -30,7 +34,7 @@ export function SearchResults() {
 
     const fetchSearchResults = async () => {
       try {
-        const response = await apiClient.get(`/product?name=${encodeURIComponent(searchQuery)}`);
+        const response = await apiClient.get(`/product?name=${encodeURIComponent(searchQuery)}&includeReviews=true`);
         const formattedProducts: Product[] = response.map((product: any) => ({
           id: product.id,
           Name: product.name,
@@ -42,6 +46,7 @@ export function SearchResults() {
           Price: Number(product.price) || 0,
           Discount_Price: Number(product.discountPrice) || 0,
           Quantity: product.Inventory?.stockQuantity || 0,
+          reviewStats: product.reviewStats || { averageRating: 0, totalReviews: 0 },
         }));
         setProducts(formattedProducts);
         setError(null);

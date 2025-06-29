@@ -94,17 +94,27 @@ export class VendorService{
 
     async update(vendorId: number, dto: UpdateVendorDto) {
         try {
+            const passwordChanged = !!dto.password;
+            
             return await this.prisma.$transaction(async (tx) => {
+                // Prepare update data
+                const updateData: any = {
+                    name: dto.name,
+                    email: dto.email,
+                    businessName: dto.businessName,
+                    phone_number: dto.phone_number,
+                    profilePicture: dto.profilePicture,
+                    updatedAt: new Date()
+                };
+
+                // Handle password update if provided
+                if (dto.password) {
+                    updateData.hash = await argon.hash(dto.password);
+                }
 
                 const updatedVendor = await tx.vendor.update({
                     where: { id: vendorId },
-                    data: {
-                        name: dto.name,
-                        email: dto.email,
-                        businessName: dto.businessName,
-                        phone_number: dto.phone_number,
-                        updatedAt: new Date()
-                    }
+                    data: updateData
                 });
     
 
@@ -112,7 +122,10 @@ export class VendorService{
                     await this.handleVendorAddressUpdates(tx, vendorId, dto.addresses);
                 }
     
-                return updatedVendor;
+                return {
+                    message: 'Vendor updated successfully',
+                    vendor: updatedVendor
+                };
             });
         } catch (error) {
             if (error.code === "P2002") {

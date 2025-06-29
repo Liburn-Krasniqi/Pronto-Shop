@@ -21,6 +21,7 @@
     "bootstrap": "^5.3.3",
     "chart.js": "^4.4.9",
     "clsx": "^2.1.1",
+    "docx": "^9.5.1",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.511.0",

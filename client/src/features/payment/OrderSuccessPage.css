@@ -42,6 +42,13 @@
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.2s;
+  height: 44px;
+  line-height: 1;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 140px;
 }
 
 .continue-shopping {
@@ -58,6 +65,7 @@
   background-color: white;
   color: #206a5d;
   border: 1px solid #206a5d;
+  margin-top: 1rem;
 }
 
 .view-orders:hover {

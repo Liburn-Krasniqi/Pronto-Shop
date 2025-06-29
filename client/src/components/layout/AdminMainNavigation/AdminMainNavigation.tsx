@@ -1,7 +1,8 @@
 import { Col, Row, Navbar, Nav, Container, Offcanvas } from "react-bootstrap";
-import { CustomNavDropdown } from "../../UI";
+import { CustomNavDropdown, ConfirmationDialog } from "../../UI";
 import classes from "./AdminMainNavigation.module.css";
 import { useAuth } from "../../../hooks/useAuth";
+import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
   faChartLine, 
@@ -13,7 +14,20 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 export const AdminMainNavigation: React.FC = () => {
-  const { isAuthenticated, userData, logout } = useAuth();
+  const navigate = useNavigate();
+  const { 
+    isAuthenticated, 
+    userData, 
+    logoutWithConfirmation,
+    showLogoutConfirm,
+    handleLogoutConfirm,
+    handleLogoutCancel
+  } = useAuth();
+
+  const handleConfirmLogout = () => {
+    handleLogoutConfirm();
+    navigate('/');
+  };
 
   return (
     <Navbar
@@ -139,7 +153,7 @@ export const AdminMainNavigation: React.FC = () => {
                       items={[
                         { to: "/admin/profile", label: "Admin Profile" },
                         { to: "/admin/settings", label: "Settings" },
-                        { to: "/", label: "Log Out", onClick: logout },
+                        { label: "Log Out", onClick: logoutWithConfirmation },
                       ]}
                       className="text-md-center text-start"
                     />
@@ -150,6 +164,17 @@ export const AdminMainNavigation: React.FC = () => {
           </Col>
         </Row>
       </Container>
+
+      <ConfirmationDialog
+        show={showLogoutConfirm}
+        onHide={handleLogoutCancel}
+        onConfirm={handleConfirmLogout}
+        title="Confirm Logout"
+        message="Are you sure you want to log out?"
+        confirmText="Log Out"
+        cancelText="Cancel"
+        variant="success"
+      />
     </Navbar>
   );
 }; 

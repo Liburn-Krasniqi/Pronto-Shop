@@ -3,12 +3,12 @@ import { ConfigModule } from '@nestjs/config';
 import { StripeService } from './stripe.service';
 import { WebhookController } from './webhook.controller';
 import { OrderModule } from '../order/order.module';
-import { OrderService } from '../order/order.service';
+import { GiftCardModule } from '../gift-card/gift-card.module';
 
 @Module({
-  imports: [ConfigModule, forwardRef(() => OrderModule)],
+  imports: [ConfigModule, forwardRef(() => OrderModule), GiftCardModule],
   controllers: [WebhookController],
-  providers: [StripeService, OrderService],
+  providers: [StripeService],
   exports: [StripeService],
 })
 export class PaymentModule {} 

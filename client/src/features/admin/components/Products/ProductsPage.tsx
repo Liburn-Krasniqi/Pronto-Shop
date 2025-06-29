@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Modal, Form, Alert } from 'react-bootstrap';
+import { Button, Modal, Form, Alert } from 'react-bootstrap';
 import { apiClient } from '../../../../api/client';
 import { FaPlus } from 'react-icons/fa';
 import Select from 'react-select';
+import { EnhancedTable, TableColumn } from '../../../../components/UI';
 
 interface Product {
   id: string;
@@ -333,6 +334,82 @@ export const ProductsPage: React.FC = () => {
     }).format(price);
   };
 
+  // Define table columns
+  const columns: TableColumn<Product>[] = [
+    {
+      key: 'name',
+      displayName: 'Name',
+      sortable: true,
+      searchable: true,
+      width: '15%'
+    },
+    {
+      key: 'description',
+      displayName: 'Description',
+      sortable: true,
+      searchable: true,
+      width: '20%',
+      render: (value) => (
+        <div style={{ maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {value}
+        </div>
+      )
+    },
+    {
+      key: 'price',
+      displayName: 'Price',
+      sortable: true,
+      searchable: false,
+      width: '10%',
+      render: (value) => formatPrice(Number(value))
+    },
+    {
+      key: 'stockQuantity',
+      displayName: 'Stock',
+      sortable: true,
+      searchable: false,
+      width: '8%',
+      transform: (product) => product.inventory?.stockQuantity ?? 0,
+      render: (value, product) => (
+        <span className={!product.inventory?.stockQuantity ? 'text-danger fw-bold' : ''}>
+          {value}
+        </span>
+      )
+    },
+    {
+      key: 'restockDate',
+      displayName: 'Last Restock',
+      sortable: true,
+      searchable: false,
+      width: '12%',
+      transform: (product) => product.inventory?.restockDate,
+      render: (value) => value ? new Date(value).toLocaleDateString() : 'Never'
+    },
+    {
+      key: 'subcategory',
+      displayName: 'Category',
+      sortable: true,
+      searchable: true,
+      width: '12%',
+      transform: (product) => product.subcategory[0]?.name || 'N/A'
+    },
+    {
+      key: 'vendorid',
+      displayName: 'Vendor ID',
+      sortable: true,
+      searchable: false,
+      width: '8%'
+    },
+    {
+      key: 'createdAt',
+      displayName: 'Created',
+      sortable: true,
+      searchable: false,
+      width: '10%',
+      render: (value) => new Date(value).toLocaleDateString()
+    }
+  ];
+
   const resetForm = () => {
     setEditForm({
       name: '',
@@ -459,53 +536,40 @@ export const ProductsPage: React.FC = () => {
           <p className="text-muted mb-4">There are currently no products in the system.</p>
         </div>
       ) : (
-        <Table striped bordered hover responsive>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Description</th>
-              <th>Price</th>
-              <th>Stock Quantity</th>
-              <th>Last Restock</th>
-              <th>Subcategory</th>
-              <th>Vendor ID</th>
-              <th>Created At</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((product) => (
-              <tr key={product.id}>
-                <td>{product.name}</td>
-                <td>{product.description}</td>
-                <td>{formatPrice(Number(product.price))}</td>
-                <td className={!product.inventory?.stockQuantity ? 'text-danger' : ''}>
-                  {product.inventory?.stockQuantity ?? 0}
-                </td>
-                <td>{product.inventory?.restockDate ? new Date(product.inventory.restockDate).toLocaleDateString() : 'Never'}</td>
-                <td>{product.subcategory[0]?.name || 'N/A'}</td>
-                <td>{product.vendorid || 'N/A'}</td>
-                <td>{new Date(product.createdAt).toLocaleDateString()}</td>
-                <td>
-                  <Button
-                    size="sm"
-                    className="me-2 background-1 color-white border-0"
-                    onClick={() => handleEditClick(product)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={() => handleDeleteClick(product)}
-                  >
-                    Delete
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
+        <EnhancedTable
+          data={products}
+          columns={columns}
+          loading={loading}
+          itemsPerPage={15}
+          searchable={true}
+          sortable={true}
+          emptyMessage="There are currently no products in the system."
+          emptyIcon={<FaPlus size={100} className="text-muted" />}
+          actions={(product) => (
+            <div className="d-flex gap-1">
+              <Button
+                size="sm"
+                className="background-1 color-white border-0"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEditClick(product);
+                }}
+              >
+                Edit
+              </Button>
+              <Button
+                variant="danger"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteClick(product);
+                }}
+              >
+                Delete
+              </Button>
+            </div>
+          )}
+        />
       )}
 
       {/* Create Modal */}

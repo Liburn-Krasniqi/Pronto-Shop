@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Modal, Form, Alert } from 'react-bootstrap';
+import { Button, Modal, Form, Alert } from 'react-bootstrap';
 import { apiClient } from '../../../../api/client';
 import { FaPlus } from 'react-icons/fa';
+import { EnhancedTable } from '../../../../components/UI';
 
 interface Address {
   id: number;
@@ -250,43 +251,84 @@ export const UsersPage: React.FC = () => {
           <p className="text-muted mb-4">There are currently no clients in the system.</p>
         </div>
       ) : (
-        <Table striped bordered hover responsive>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Address</th>
-              <th>Created At</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user.id}>
-                <td>{`${user.firstName} ${user.lastName}`}</td>
-                <td>{user.email}</td>
-                <td>{formatAddress(user.addresses)}</td>
-                <td>{new Date(user.createdAt).toLocaleDateString()}</td>
-                <td>
-                  <Button
-                    size="sm"
-                    className="me-2 background-1 color-white border-0"
-                    onClick={() => handleEditClick(user)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={() => handleDeleteClick(user)}
-                  >
-                    Delete
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
+        <EnhancedTable
+          data={users}
+          columns={[
+            {
+              key: 'name',
+              displayName: 'Name',
+              sortable: true,
+              searchable: true,
+              width: '20%',
+              transform: (user) => `${user.firstName} ${user.lastName}`
+            },
+            {
+              key: 'email',
+              displayName: 'Email',
+              sortable: true,
+              searchable: true,
+              width: '25%'
+            },
+            {
+              key: 'role',
+              displayName: 'Role',
+              sortable: true,
+              searchable: true,
+              width: '10%'
+            },
+            {
+              key: 'addresses',
+              displayName: 'Address',
+              sortable: false,
+              searchable: true,
+              width: '25%',
+              transform: (user) => formatAddress(user.addresses),
+              render: (value) => (
+                <div style={{ maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {value}
+                </div>
+              )
+            },
+            {
+              key: 'createdAt',
+              displayName: 'Created At',
+              sortable: true,
+              searchable: false,
+              width: '15%',
+              render: (value) => new Date(value).toLocaleDateString()
+            }
+          ]}
+          loading={loading}
+          itemsPerPage={15}
+          searchable={true}
+          sortable={true}
+          emptyMessage="There are currently no users in the system."
+          emptyIcon={<FaPlus size={100} className="text-muted" />}
+          actions={(user) => (
+            <div className="d-flex gap-1">
+              <Button
+                size="sm"
+                className="background-1 color-white border-0"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEditClick(user);
+                }}
+              >
+                Edit
+              </Button>
+              <Button
+                variant="danger"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteClick(user);
+                }}
+              >
+                Delete
+              </Button>
+            </div>
+          )}
+        />
       )}
 
       {/* Create Modal */}

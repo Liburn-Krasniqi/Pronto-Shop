@@ -2,6 +2,7 @@ import React, { useState, useEffect, ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../../hooks/useAuth';
 import { apiClient } from '../../../../api/client';
+import { ConfirmationDialog } from '../../../../components/UI';
 
 interface AddressData {
   country: string;
@@ -36,6 +37,7 @@ export const ProfilePage: React.FC = () => {
 
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
 
   if(isAuthenticated && userType === 'vendor') navigate('/vendor/profile');
 
@@ -94,17 +96,23 @@ export const ProfilePage: React.FC = () => {
     }
   };
 
-  const handleDeleteProfile = async () => {
-    if (window.confirm('Are you sure you want to delete your profile? This action cannot be undone.')) {
-      setError(null);
-      try {
-        await apiClient.delete('/users/me');
-        setSuccess('Profile deleted successfully!');
-        setTimeout(() => navigate('/login'), 1500);
-      } catch (err: any) {
-        setError(err.message || 'Failed to delete profile.');
-      }
+  const handleDeleteProfile = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    setError(null);
+    try {
+      await apiClient.delete('/users/me');
+      setSuccess('Profile deleted successfully!');
+      setTimeout(() => navigate('/login'), 1500);
+    } catch (err: any) {
+      setError(err.message || 'Failed to delete profile.');
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteConfirm(false);
   };
 
   if (loading) return <div>Loading...</div>;
@@ -254,6 +262,17 @@ export const ProfilePage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <ConfirmationDialog
+        show={showDeleteConfirm}
+        onHide={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="Confirm Delete Profile"
+        message="Are you sure you want to delete your profile? This action cannot be undone."
+        confirmText="Delete Profile"
+        cancelText="Cancel"
+        variant="danger"
+      />
     </div>
   );
 };

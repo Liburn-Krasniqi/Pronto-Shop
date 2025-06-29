@@ -160,8 +160,8 @@ export const SignupPage: React.FC = () => {
 
               <p className='text-center my-4'>
                 By creating an account, you agree to ProntoShop's 
-                <Link to="" className='color-2 text-decoration-none'> Conditions of Use </Link>
-                and <Link to="" className='color-2 text-decoration-none'>Privacy Notice </Link>
+                <Link to="/conditions" className='color-2 text-decoration-none'> Conditions of Use </Link>
+                and <Link to="/privacy" className='color-2 text-decoration-none'>Privacy Notice </Link>
               </p>
               
               <hr />

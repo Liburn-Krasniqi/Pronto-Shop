@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Modal, Form, Alert } from 'react-bootstrap';
+import { Button, Modal, Form, Alert } from 'react-bootstrap';
 import { apiClient } from '../../../../api/client';
 import { FaPlus } from 'react-icons/fa';
+import { EnhancedTable } from '../../../../components/UI';
 
 interface Address {
   id?: number;
@@ -18,6 +19,7 @@ interface Vendor {
   name: string;
   businessName: string;
   phone_number: string;
+  profilePicture?: string;
   createdAt: string;
   updatedAt: string;
   addresses: Address;
@@ -29,6 +31,7 @@ interface EditVendorData {
   email: string;
   businessName: string;
   phoneNumber: string;
+  profilePicture?: string;
   password?: string;
   confirmPassword?: string;
   addresses?: {
@@ -48,13 +51,18 @@ export const VendorsPage: React.FC = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showRemoveImageModal, setShowRemoveImageModal] = useState(false);
   const [selectedVendor, setSelectedVendor] = useState<Vendor | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [editForm, setEditForm] = useState<EditVendorData>({
     firstName: '',
     lastName: '',
     email: '',
     businessName: '',
     phoneNumber: '',
+    profilePicture: '',
     password: '',
     confirmPassword: '',
     addresses: {
@@ -97,6 +105,63 @@ export const VendorsPage: React.FC = () => {
     }
   };
 
+  const handleImageUpload = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    try {
+      setUploadingImage(true);
+      const response = await apiClient.post('/upload/profile-picture', formData);
+      return response.filePath;
+    } catch (err: any) {
+      console.error('Error uploading image:', err);
+      throw new Error(err.response?.data?.message || 'Failed to upload image');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    // If we're in edit mode and there's an existing image, show confirmation
+    if (showEditModal && selectedVendor?.profilePicture) {
+      setShowRemoveImageModal(true);
+    } else {
+      // Just remove the preview and file selection
+      setImageFile(null);
+      setImagePreview(null);
+      setEditForm({ ...editForm, profilePicture: '' });
+    }
+  };
+
+  const handleConfirmRemoveImage = async () => {
+    if (!selectedVendor) return;
+    
+    try {
+      // Remove from edit modal - just clear the form
+      setImageFile(null);
+      setImagePreview(null);
+      setEditForm({ ...editForm, profilePicture: '' });
+      
+      setShowRemoveImageModal(false);
+      setSelectedVendor(null);
+    } catch (err: any) {
+      console.error('Error removing profile picture:', err);
+      setError(err.message || 'Failed to remove profile picture');
+    }
+  };
+
   const handleEditClick = (vendor: Vendor) => {
     setSelectedVendor(vendor);
     const [firstName = '', lastName = ''] = vendor.name.split(' ');
@@ -106,8 +171,11 @@ export const VendorsPage: React.FC = () => {
       email: vendor.email,
       businessName: vendor.businessName,
       phoneNumber: vendor.phone_number,
+      profilePicture: vendor.profilePicture || '',
       addresses: vendor.addresses,
     });
+    setImagePreview(vendor.profilePicture ? `http://localhost:3333${vendor.profilePicture}` : null);
+    setImageFile(null);
     setShowEditModal(true);
   };
 
@@ -121,11 +189,19 @@ export const VendorsPage: React.FC = () => {
     if (!selectedVendor) return;
 
     try {
+      let profilePictureUrl = editForm.profilePicture;
+      
+      // Upload new image if one was selected
+      if (imageFile) {
+        profilePictureUrl = await handleImageUpload(imageFile);
+      }
+
       const { data: response } = await apiClient.patch(`/vendor/${selectedVendor.id}`, {
         name: `${editForm.firstName} ${editForm.lastName}`.trim(),
         email: editForm.email,
         businessName: editForm.businessName,
         phone_number: editForm.phoneNumber,
+        profilePicture: profilePictureUrl,
         addresses: editForm.addresses
       });
       console.log('API Response:', response);
@@ -139,6 +215,7 @@ export const VendorsPage: React.FC = () => {
               email: editForm.email,
               businessName: editForm.businessName,
               phone_number: editForm.phoneNumber,
+              profilePicture: profilePictureUrl,
               addresses: editForm.addresses ? {
                 ...editForm.addresses,
                 id: vendor.addresses?.id
@@ -148,6 +225,8 @@ export const VendorsPage: React.FC = () => {
       ));
       
       setShowEditModal(false);
+      setImageFile(null);
+      setImagePreview(null);
     } catch (err: any) {
       console.error('Error updating vendor:', err);
       setError(err.message || 'Failed to update vendor');
@@ -179,11 +258,6 @@ export const VendorsPage: React.FC = () => {
     return parts.length > 0 ? parts.join(', ') : 'N/A';
   };
 
-  const formatContactName = (firstName: string | undefined, lastName: string | undefined) => {
-    const parts = [firstName, lastName].filter(part => part && part.trim() !== '');
-    return parts.length > 0 ? parts.join(' ') : '';
-  };
-
   const resetForm = () => {
     setEditForm({
       firstName: '',
@@ -191,6 +265,7 @@ export const VendorsPage: React.FC = () => {
       email: '',
       businessName: '',
       phoneNumber: '',
+      profilePicture: '',
       password: '',
       confirmPassword: '',
       addresses: {
@@ -201,6 +276,8 @@ export const VendorsPage: React.FC = () => {
         country: '',
       },
     });
+    setImageFile(null);
+    setImagePreview(null);
     setEmailError(null);
     setError(null);
   };
@@ -226,11 +303,19 @@ export const VendorsPage: React.FC = () => {
     }
 
     try {
+      let profilePictureUrl = '';
+      
+      // Upload image if one was selected
+      if (imageFile) {
+        profilePictureUrl = await handleImageUpload(imageFile);
+      }
+
       const { password, confirmPassword, ...vendorData } = editForm;
-      const { data: response } = await apiClient.post('/vendor', {
+      await apiClient.post('/vendor', {
         ...vendorData,
         name: `${editForm.firstName} ${editForm.lastName}`.trim(),
         phone_number: editForm.phoneNumber,
+        profilePicture: profilePictureUrl,
         password: editForm.password,
         address: editForm.addresses
       });
@@ -274,47 +359,121 @@ export const VendorsPage: React.FC = () => {
           <p className="text-muted mb-4">There are currently no vendors in the system.</p>
         </div>
       ) : (
-        <Table striped bordered hover responsive>
-          <thead>
-            <tr>
-              <th>Business Name</th>
-              <th>Contact Name</th>
-              <th>Email</th>
-              <th>Phone</th>
-              <th>Address</th>
-              <th>Created At</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {vendors.map((vendor) => (
-              <tr key={vendor.id}>
-                <td>{vendor.businessName}</td>
-                <td>{vendor.name}</td>
-                <td>{vendor.email}</td>
-                <td>{vendor.phone_number}</td>
-                <td>{formatAddress(vendor.addresses)}</td>
-                <td>{new Date(vendor.createdAt).toLocaleDateString()}</td>
-                <td>
-                  <Button
-                    size="sm"
-                    className="me-2 background-1 color-white border-0"
-                    onClick={() => handleEditClick(vendor)}
+        <EnhancedTable
+          data={vendors}
+          columns={[
+            {
+              key: 'profilePicture',
+              displayName: 'Profile Picture',
+              sortable: false,
+              searchable: false,
+              width: '8%',
+              render: (value) => (
+                value ? (
+                  <img 
+                    src={`http://localhost:3333${value}`} 
+                    alt="Profile" 
+                    style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '8px' }}
+                  />
+                ) : (
+                  <div 
+                    style={{ 
+                      width: '50px', 
+                      height: '50px', 
+                      backgroundColor: '#f8f9fa', 
+                      borderRadius: '8px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      border: '1px solid #dee2e6'
+                    }}
                   >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={() => handleDeleteClick(vendor)}
-                  >
-                    Delete
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
+                    <span style={{ fontSize: '12px', color: '#6c757d' }}>No Image</span>
+                  </div>
+                )
+              )
+            },
+            {
+              key: 'businessName',
+              displayName: 'Business Name',
+              sortable: true,
+              searchable: true,
+              width: '15%'
+            },
+            {
+              key: 'name',
+              displayName: 'Contact Name',
+              sortable: true,
+              searchable: true,
+              width: '12%'
+            },
+            {
+              key: 'email',
+              displayName: 'Email',
+              sortable: true,
+              searchable: true,
+              width: '18%'
+            },
+            {
+              key: 'phone_number',
+              displayName: 'Phone',
+              sortable: true,
+              searchable: true,
+              width: '12%'
+            },
+            {
+              key: 'addresses',
+              displayName: 'Address',
+              sortable: false,
+              searchable: true,
+              width: '20%',
+              transform: (vendor) => formatAddress(vendor.addresses),
+              render: (value) => (
+                <div style={{ maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {value}
+                </div>
+              )
+            },
+            {
+              key: 'createdAt',
+              displayName: 'Created At',
+              sortable: true,
+              searchable: false,
+              width: '10%',
+              render: (value) => new Date(value).toLocaleDateString()
+            }
+          ]}
+          loading={loading}
+          itemsPerPage={15}
+          searchable={true}
+          sortable={true}
+          emptyMessage="There are currently no vendors in the system."
+          emptyIcon={<FaPlus size={100} className="text-muted" />}
+          actions={(vendor) => (
+            <div className="d-flex gap-1">
+              <Button
+                size="sm"
+                className="background-1 color-white border-0"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEditClick(vendor);
+                }}
+              >
+                Edit
+              </Button>
+              <Button
+                variant="danger"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteClick(vendor);
+                }}
+              >
+                Delete
+              </Button>
+            </div>
+          )}
+        />
       )}
 
       {/* Edit Modal */}
@@ -382,6 +541,49 @@ export const VendorsPage: React.FC = () => {
                 }
                 required
               />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Profile Picture</Form.Label>
+              {imagePreview && (
+                <div className="mb-2">
+                  <img 
+                    src={imagePreview} 
+                    alt="Profile preview" 
+                    style={{ 
+                      width: '100px', 
+                      height: '100px', 
+                      objectFit: 'cover',
+                      borderRadius: '8px',
+                      border: '1px solid #ddd'
+                    }} 
+                  />
+                  <div className="mt-2">
+                    <Button 
+                      variant="outline-danger" 
+                      size="sm" 
+                      onClick={handleRemoveImage}
+                      disabled={uploadingImage}
+                    >
+                      Remove Image
+                    </Button>
+                  </div>
+                </div>
+              )}
+              <Form.Control
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                disabled={uploadingImage}
+              />
+              {uploadingImage && (
+                <Form.Text className="text-muted">
+                  Uploading image...
+                </Form.Text>
+              )}
+              <Form.Text className="text-muted">
+                Upload a new profile picture (JPG, PNG, GIF up to 2MB)
+              </Form.Text>
             </Form.Group>
 
             <h5 className="mt-4">Address</h5>
@@ -564,6 +766,49 @@ export const VendorsPage: React.FC = () => {
             </Form.Group>
 
             <Form.Group className="mb-3">
+              <Form.Label>Profile Picture</Form.Label>
+              {imagePreview && (
+                <div className="mb-2">
+                  <img 
+                    src={imagePreview} 
+                    alt="Profile preview" 
+                    style={{ 
+                      width: '100px', 
+                      height: '100px', 
+                      objectFit: 'cover',
+                      borderRadius: '8px',
+                      border: '1px solid #ddd'
+                    }} 
+                  />
+                  <div className="mt-2">
+                    <Button 
+                      variant="outline-secondary" 
+                      size="sm" 
+                      onClick={handleRemoveImage}
+                      disabled={uploadingImage}
+                    >
+                      Clear Selection
+                    </Button>
+                  </div>
+                </div>
+              )}
+              <Form.Control
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                disabled={uploadingImage}
+              />
+              {uploadingImage && (
+                <Form.Text className="text-muted">
+                  Uploading image...
+                </Form.Text>
+              )}
+              <Form.Text className="text-muted">
+                Upload a profile picture (JPG, PNG, GIF up to 2MB)
+              </Form.Text>
+            </Form.Group>
+
+            <Form.Group className="mb-3">
               <Form.Label>Password</Form.Label>
               <Form.Control
                 type="password"
@@ -707,6 +952,24 @@ export const VendorsPage: React.FC = () => {
           </Button>
           <Button variant="danger" onClick={handleDeleteConfirm}>
             Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Remove Image Confirmation Modal */}
+      <Modal show={showRemoveImageModal} onHide={() => setShowRemoveImageModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Remove Image</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to remove this vendor's profile picture? This will be saved when you click 'Save Changes'.
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowRemoveImageModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={handleConfirmRemoveImage}>
+            Remove Image
           </Button>
         </Modal.Footer>
       </Modal>

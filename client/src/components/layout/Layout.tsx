@@ -1,17 +1,25 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { MainNavigation } from "./MainNavigation";
-import {VendorMainNavigation} from "./VendorMainNavigation";
 import { AdminMainNavigation } from "./AdminMainNavigation/AdminMainNavigation";
 import { Footer } from "./Footer";
+import { HelpAI } from "../UI/HelpAI";
 import { useAuth } from "../../hooks/useAuth";
 
 const Layout = () => {
   const { userType } = useAuth();
+  const location = useLocation();
   
   const renderNavigation = () => {
+    // Check if we're on vendor auth pages (signin/signup) - these should use regular navigation
+    const isVendorAuthPage = location.pathname === '/vendor/signin' || location.pathname === '/vendor/signup';
+    
+    // If we're on vendor auth pages, always show regular navigation
+    if (isVendorAuthPage) {
+      return <MainNavigation />;
+    }
+    
+    // Otherwise, use the user type to determine navigation
     switch (userType) {
-      case 'vendor':
-        return <VendorMainNavigation />;
       case 'admin':
         return <AdminMainNavigation />;
       default:
@@ -26,6 +34,7 @@ const Layout = () => {
         <Outlet />
       </main>
       <Footer />
+      <HelpAI />
     </div>
   );
 };

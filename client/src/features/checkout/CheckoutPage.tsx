@@ -4,6 +4,7 @@ import { useCartStore } from '@/stores/cartStore';
 import { useAuth } from '@/hooks/useAuth';
 import { apiClient } from '@/api/client';
 import { toast } from 'react-toastify';
+import { GiftCardInput } from '@/components/UI';
 import './CheckoutPage.css';
 
 interface ShippingDetails {
@@ -21,6 +22,9 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [giftCardApplied, setGiftCardApplied] = useState(0);
+  const [giftCardCode, setGiftCardCode] = useState<string>('');
+  const [orderId, setOrderId] = useState<number | null>(null);
 
   const [shippingDetails, setShippingDetails] = useState<ShippingDetails>({
     street: '',
@@ -40,23 +44,7 @@ export default function CheckoutPage() {
           userData.addresses.postalCode &&
           userData.addresses.country;
 
-        if (hasCompleteAddress) {
-          setIsTransitioning(true);
-          toast.info('Proceeding to payment...', {
-            position: "top-center",
-            autoClose: 2000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-          });
-          
-          // Add a small delay for smooth transition
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          await handleOrderCreation(userData.addresses);
-          return;
-        }
-
+        // Pre-fill the shipping details with existing address data
         setShippingDetails({
           street: userData.addresses.street || '',
           city: userData.addresses.city || '',
@@ -79,6 +67,27 @@ export default function CheckoutPage() {
     }));
   };
 
+  const handleGiftCardApplied = async (amount: number, code: string) => {
+    // Check if shipping details are complete
+    const hasCompleteAddress = 
+      shippingDetails.street &&
+      shippingDetails.city &&
+      shippingDetails.state &&
+      shippingDetails.postalCode &&
+      shippingDetails.country;
+
+    if (!hasCompleteAddress) {
+      toast.error('Please complete shipping details first');
+      return;
+    }
+
+    // For now, just update the local state
+    // The actual gift card application will happen when the order is created
+    setGiftCardApplied(amount);
+    setGiftCardCode(code);
+    toast.success(`Gift card applied! Discount: $${amount.toFixed(2)}`);
+  };
+
   const handleOrderCreation = async (addressDetails: ShippingDetails) => {
     if (!userData?.id) {
       toast.error('Please log in to proceed with checkout');
@@ -95,7 +104,7 @@ export default function CheckoutPage() {
           quantity: item.quantity,
           price: item.price
         })),
-        totalAmount: getTotal(),
+        totalAmount: getTotal() - giftCardApplied,
         status: 'pending',
         shippingAddress: JSON.stringify(addressDetails)
       };
@@ -106,8 +115,26 @@ export default function CheckoutPage() {
         throw new Error('Invalid order response from server');
       }
 
-      const orderId = response.id;
-      navigate(`/payment/${orderId}`);
+      const newOrderId = response.id;
+      setOrderId(newOrderId);
+
+      // Apply gift card to the order if one was applied
+      if (giftCardApplied > 0) {
+        try {
+          // Get the gift card code from the GiftCardInput component
+          // For now, we'll need to store this information
+          await apiClient.post(`/orders/${newOrderId}/gift-card`, {
+            giftCardCode: giftCardCode,
+            amountToUse: giftCardApplied
+          });
+        } catch (giftCardError: any) {
+          console.error('Gift card application error:', giftCardError);
+          // Don't fail the entire order if gift card application fails
+          toast.warning('Order created but gift card application failed. Please contact support.');
+        }
+      }
+
+      navigate(`/payment/${newOrderId}`);
     } catch (error: any) {
       console.error('Checkout error:', error);
       toast.error(error.response?.data?.message || error.message || 'Failed to create order');
@@ -167,6 +194,7 @@ export default function CheckoutPage() {
   };
 
   const total = getTotal();
+  const finalTotal = total - giftCardApplied;
   const isMinimumAmount = total >= 1.00;
 
   if (initialLoading) {
@@ -274,6 +302,12 @@ export default function CheckoutPage() {
               </div>
             </div>
 
+            <GiftCardInput
+              onGiftCardApplied={handleGiftCardApplied}
+              orderTotal={total}
+              disabled={loading}
+            />
+
             {!isMinimumAmount && (
               <div className="minimum-amount-warning">
                 Minimum order amount is $1.00. Please add more items to your cart.
@@ -314,15 +348,21 @@ export default function CheckoutPage() {
           <div className="summary-total">
             <div className="total-row">
               <span>Subtotal</span>
-              <span>${getTotal().toFixed(2)}</span>
+              <span>${total.toFixed(2)}</span>
             </div>
+            {giftCardApplied > 0 && (
+              <div className="total-row discount">
+                <span>Gift Card Discount</span>
+                <span>-${giftCardApplied.toFixed(2)}</span>
+              </div>
+            )}
             <div className="total-row">
               <span>Shipping</span>
               <span>Calculated at checkout</span>
             </div>
             <div className="total-row grand-total">
               <span>Total</span>
-              <span>${getTotal().toFixed(2)}</span>
+              <span>${finalTotal.toFixed(2)}</span>
             </div>
           </div>
         </div>

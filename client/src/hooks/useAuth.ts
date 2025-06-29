@@ -16,6 +16,7 @@ export const useAuth = () => {
   const [error, setError] = useState<string | null>(null);
   const [userData, setUserData] = useState<any>(null);
   const [userType, setUserType] = useState<'user' | 'vendor' | 'admin' | null>(null);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState<boolean>(false);
 
   const refreshAccessToken = async () => {
     try {
@@ -131,6 +132,19 @@ export const useAuth = () => {
     setUserType(null);
   };
 
+  const logoutWithConfirmation = () => {
+    setShowLogoutConfirm(true);
+  };
+
+  const handleLogoutConfirm = () => {
+    logout();
+    setShowLogoutConfirm(false);
+  };
+
+  const handleLogoutCancel = () => {
+    setShowLogoutConfirm(false);
+  };
+
   useEffect(() => {
     checkAuth();
   }, []);
@@ -145,6 +159,10 @@ export const useAuth = () => {
     setToken,
     setIsAuthenticated,
     refreshAccessToken,
-    logout
+    logout,
+    logoutWithConfirmation,
+    showLogoutConfirm,
+    handleLogoutConfirm,
+    handleLogoutCancel
   };
 };

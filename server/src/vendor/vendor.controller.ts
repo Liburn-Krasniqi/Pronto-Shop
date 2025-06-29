@@ -58,6 +58,36 @@ export class VendorController{
         return this.vendorService.findAll()
     }
 
+    @Get('public')
+    @ApiOperation({
+        summary: 'Retrieve all Vendors (Public)',
+        description: 'Fetch all vendors for public filtering purposes'
+    })
+    @ApiResponse({
+        status: 200,
+        type: VendorResponseDto,
+        description: 'Successfully retrieved vendors'
+    })
+    findPublicVendors(){
+        return this.vendorService.findAll()
+    }
+
+    @Get('public/:id')
+    @ApiOperation({
+        summary: 'Get Vendor by ID (Public)',
+        description: 'Fetch vendor information for public viewing'
+    })
+    @ApiParam({ name: 'id', type: Number })
+    @ApiResponse({
+        status: 200,
+        description: 'Vendor found',
+        type: VendorResponseDto
+    })
+    @ApiResponse({ status: 404, description: 'Vendor not found' })
+    findPublicById(@Param('id') id: string) {
+        return this.vendorService.findById(Number(id));
+    }
+
     @UseGuards(JwtGuard, AdminGuard)
     @Get('count')
     @ApiOperation({ summary: 'Get total number of vendors (Admin only)' })
@@ -97,6 +127,7 @@ export class VendorController{
           name: true,
           businessName: true,
           phone_number: true,
+          profilePicture: true,
           createdAt: true,
           updatedAt: true,
           addresses: {

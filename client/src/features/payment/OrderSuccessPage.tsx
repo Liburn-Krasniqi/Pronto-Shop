@@ -22,7 +22,7 @@ export default function OrderSuccessPage() {
         <div className="button-group">
           <button 
             className="continue-shopping"
-            onClick={() => navigate('/products')}
+            onClick={() => navigate('/')}
           >
             Continue Shopping
           </button>
