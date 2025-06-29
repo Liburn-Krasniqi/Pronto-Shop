@@ -55,7 +55,7 @@ export function VendorSignupForm() {
 
   useEffect(() => {
         if (isAuthenticated) {
-           navigate('/vendor/profile');
+           navigate('/vendor/dashboard');
         }
       }, [isAuthenticated, navigate]);
   
@@ -102,9 +102,15 @@ const handleSubmit = async (e: FormEvent) => {
       });
 
       const { access_token, refresh_token } = res.data;
-      Cookies.set('access_token', access_token);
-      Cookies.set('refresh_token', refresh_token);
-      window.location.href = '/vendor/profile';
+      Cookies.set('access_token', access_token, {
+        sameSite: 'strict',
+        secure: true
+      });
+      Cookies.set('refresh_token', refresh_token, {
+        sameSite: 'strict',
+        secure: true
+      });
+      window.location.href = '/vendor/dashboard';
   } catch (err: any) {
       const errorText = err.response?.data?.message || err.message;
       setMessage({ type: 'danger', text: `Signup failed: ${errorText}` });
@@ -278,9 +284,9 @@ const handleSubmit = async (e: FormEvent) => {
                
               </form> 
               <p className='text-center my-4'>
-                By creating an account, you agree to ProntoShop’s 
-                <Link to="" className='color-2 text-decoration-none'> Conditions of Use </Link>
-                and <Link to="" className='color-2 text-decoration-none'>Privacy Notice </Link>
+                By creating an account, you agree to ProntoShop's 
+                <Link to="/conditions" className='color-2 text-decoration-none'> Conditions of Use </Link>
+                and <Link to="/privacy" className='color-2 text-decoration-none'>Privacy Notice </Link>
               </p>
               
               <hr />

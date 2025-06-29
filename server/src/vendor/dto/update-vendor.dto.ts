@@ -24,6 +24,10 @@ export class UpdateVendorDto{
     phone_number?: string
 
     @IsOptional()
+    @IsString()
+    profilePicture?: string
+
+    @IsOptional()
     @Type(() => VendorAddressDto)
     addresses?: VendorAddressDto;
 }

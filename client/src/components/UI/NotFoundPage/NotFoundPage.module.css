@@ -1,0 +1,143 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f0f8f7 0%, #e8f5e8 100%);
+  width: 100%;
+  padding: 0;
+}
+
+.content {
+  padding: 2rem;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(32, 106, 93, 0.15);
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.errorCode {
+  font-size: 8rem;
+  font-weight: 900;
+  color: #206a5d;
+  line-height: 1;
+  margin-bottom: 1rem;
+  text-shadow: 2px 2px 4px rgba(32, 106, 93, 0.1);
+  background: linear-gradient(45deg, #206a5d, #81b214);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #206a5d;
+  margin-bottom: 1rem;
+}
+
+.description {
+  font-size: 1.1rem;
+  color: #6c757d;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  text-align: center;
+  max-width: 600px;
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.homeButton {
+  text-decoration: none;
+  display: inline-block;
+}
+
+.homeButton:hover {
+  text-decoration: none;
+  transform: translateY(-2px);
+  transition: transform 0.2s ease;
+}
+
+.backButton {
+  transition: all 0.2s ease;
+  border-color: #81b214;
+  color: #81b214;
+}
+
+.backButton:hover {
+  transform: translateY(-2px);
+  background-color: #81b214;
+  border-color: #81b214;
+  color: white;
+}
+
+.helpText {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.link {
+  color: #206a5d;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.link:hover {
+  color: #81b214;
+  text-decoration: underline;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .content {
+    padding: 1.5rem;
+    margin: 0;
+  }
+  
+  .errorCode {
+    font-size: 6rem;
+  }
+  
+  .title {
+    font-size: 2rem;
+  }
+  
+  .actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .actions > * {
+    width: 100%;
+    max-width: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .errorCode {
+    font-size: 4rem;
+  }
+  
+  .title {
+    font-size: 1.5rem;
+  }
+  
+  .description {
+    font-size: 1rem;
+  }
+} 

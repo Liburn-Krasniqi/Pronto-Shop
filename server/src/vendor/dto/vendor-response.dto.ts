@@ -19,6 +19,12 @@ export class VendorResponseDto {
   @ApiProperty({ example: '+1-234-567-8901', description: 'Vendor contact phone number' })
   phone_number: string;
 
+  @ApiPropertyOptional({ 
+    example: '/uploads/profile-pictures/1234567890-image.jpg', 
+    description: 'Profile picture URL of the vendor' 
+  })
+  profilePicture?: string;
+
   @ApiProperty({ 
     type: VendorAddressDto,
     description: 'Array of vendor addresses',
