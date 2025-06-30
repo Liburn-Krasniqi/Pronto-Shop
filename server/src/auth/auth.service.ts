@@ -98,7 +98,7 @@ export class AuthService{
     async signin(dto: SignInDto){
       let account: any;
 
-      if(dto.type === "user"){
+      if(dto.type === "user" || dto.type === "admin"){
         account = await this.prisma.user.findUnique({
             where: {
                 email: dto.email,
@@ -120,6 +120,12 @@ export class AuthService{
             );
         }
 
+        if (dto.type === 'user' && account.role !== 'user') {
+            throw new ForbiddenException(
+                'Invalid account type'
+            );
+        }
+
         const pwMatches = await argon.verify(
             account.hash,
             dto.password,
@@ -133,14 +139,16 @@ export class AuthService{
         return this.generateToken(account.id, account.email, dto.type);
     }
 
-    async generateToken(userId: number, email: string, type: 'user' | 'vendor'): Promise<{ 
+    async generateToken(userId: number, email: string, type: 'user' | 'vendor' | 'admin'): Promise<{ 
         access_token: string,
         refresh_token: string 
       }> {
+        const uniqueId = Date.now().toString(36) + Math.random().toString(36).substring(2);
         const payload = {
           sub: userId, 
           email,
-          type
+          type,
+          uniqueId
         };
         
         const secret = this.config.get('JWT_SECRET');
@@ -163,15 +171,67 @@ export class AuthService{
           )
         ]);
       
-        await this.prisma.refreshToken.create({
-          data: {
-            token: refresh_token,
-            type,
-            userId: type==='user' ? userId : undefined,
-            vendorId: type==='vendor' ? userId : undefined,
-            expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+        try {
+          // Delete any existing refresh tokens for this user
+          await this.prisma.refreshToken.deleteMany({
+            where: {
+              type,
+              ...(type === 'user' || type === 'admin' ? { userId } : { vendorId: userId })
+            }
+          });
+
+          // Create new refresh token
+          await this.prisma.refreshToken.create({
+            data: {
+              token: refresh_token,
+              type,
+              userId: type==='user' || type==='admin' ? userId : undefined,
+              vendorId: type==='vendor' ? userId : undefined,
+              expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+            }
+          });
+        } catch (error) {
+          if (error instanceof PrismaClientKnownRequestError && error.code === 'P2002') {
+            // If we get a unique constraint error, try one more time with a different token
+            const retryPayload = {
+              ...payload,
+              uniqueId: Date.now().toString(36) + Math.random().toString(36).substring(2)
+            };
+            
+            const [new_access_token, new_refresh_token] = await Promise.all([
+              this.jwt.signAsync(
+                retryPayload,
+                {
+                  expiresIn: '30m',
+                  secret: secret
+                }
+              ),
+              this.jwt.signAsync(
+                retryPayload,
+                {
+                  expiresIn: '7d',
+                  secret: refreshSecret
+                }
+              )
+            ]);
+
+            await this.prisma.refreshToken.create({
+              data: {
+                token: new_refresh_token,
+                type,
+                userId: type==='user' || type==='admin' ? userId : undefined,
+                vendorId: type==='vendor' ? userId : undefined,
+                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+              }
+            });
+
+            return {
+              access_token: new_access_token,
+              refresh_token: new_refresh_token
+            };
           }
-        });
+          throw error;
+        }
       
         return {
           access_token,
@@ -179,25 +239,131 @@ export class AuthService{
         };
     }
 
-    async refreshTokens(userId: number, email: string, refreshToken: string, type: 'user' | 'vendor') {
-        await this.prisma.refreshToken.deleteMany({
-          where: {
-            token: refreshToken,
-            type,
-            ...(type === 'user' ? { userId } : { vendorId: userId })
-          }
+    async refreshTokens(userId: number, email: string, refreshToken: string, type: 'user' | 'vendor' | 'admin') {
+        // Use a transaction to ensure atomicity
+        return await this.prisma.$transaction(async (tx) => {
+            // First verify and delete the old token
+            const oldToken = await tx.refreshToken.findFirst({
+                where: {
+                    token: refreshToken,
+                    type,
+                    ...(type === 'user' || type === 'admin' ? { userId } : { vendorId: userId }),
+                    revoked: false,
+                    expiresAt: {
+                        gt: new Date()
+                    }
+                }
+            });
+
+            if (!oldToken) {
+                throw new ForbiddenException('Invalid refresh token');
+            }
+
+            // Delete all existing tokens for this user
+            await tx.refreshToken.deleteMany({
+                where: {
+                    type,
+                    ...(type === 'user' || type === 'admin' ? { userId } : { vendorId: userId })
+                }
+            });
+
+            // Generate new tokens with a unique identifier
+            const uniqueId = Date.now().toString(36) + Math.random().toString(36).substring(2);
+            const payload = {
+                sub: userId,
+                email,
+                type,
+                uniqueId
+            };
+            
+            const secret = this.config.get('JWT_SECRET');
+            const refreshSecret = this.config.get('JWT_REFRESH_SECRET');
+          
+            const [access_token, refresh_token] = await Promise.all([
+                this.jwt.signAsync(
+                    payload,
+                    {
+                        expiresIn: '30m',
+                        secret: secret
+                    }
+                ),
+                this.jwt.signAsync(
+                    payload,
+                    {
+                        expiresIn: '7d',
+                        secret: refreshSecret
+                    }
+                )
+            ]);
+
+            try {
+                // Create new refresh token
+                await tx.refreshToken.create({
+                    data: {
+                        token: refresh_token,
+                        type,
+                        userId: type==='user' || type==='admin' ? userId : undefined,
+                        vendorId: type==='vendor' ? userId : undefined,
+                        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+                    }
+                });
+            } catch (error) {
+                if (error instanceof PrismaClientKnownRequestError && error.code === 'P2002') {
+                    // If we still get a unique constraint error, try one more time with a different token
+                    const retryPayload = {
+                        ...payload,
+                        uniqueId: Date.now().toString(36) + Math.random().toString(36).substring(2)
+                    };
+                    
+                    const [new_access_token, new_refresh_token] = await Promise.all([
+                        this.jwt.signAsync(
+                            retryPayload,
+                            {
+                                expiresIn: '30m',
+                                secret: secret
+                            }
+                        ),
+                        this.jwt.signAsync(
+                            retryPayload,
+                            {
+                                expiresIn: '7d',
+                                secret: refreshSecret
+                            }
+                        )
+                    ]);
+
+                    await tx.refreshToken.create({
+                        data: {
+                            token: new_refresh_token,
+                            type,
+                            userId: type==='user' || type==='admin' ? userId : undefined,
+                            vendorId: type==='vendor' ? userId : undefined,
+                            expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+                        }
+                    });
+
+                    return {
+                        access_token: new_access_token,
+                        refresh_token: new_refresh_token
+                    };
+                }
+                throw error;
+            }
+
+            return {
+                access_token,
+                refresh_token
+            };
         });
-      
-        return this.generateToken(userId, email, type);
     }
 
-    async logout(userId: number, refreshToken: string, type: 'user' | 'vendor') {
+    async logout(userId: number, refreshToken: string, type: 'user' | 'vendor' | 'admin') {
 
         await this.prisma.refreshToken.updateMany({
           where: {
             token: refreshToken,
             type,
-            ...(type === 'user' ? { userId } : { vendorId: userId })
+            ...(type === 'user' || type === 'admin' ? { userId } : { vendorId: userId })
           },
           data: {
             revoked: true

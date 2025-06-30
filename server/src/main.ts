@@ -1,22 +1,28 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    rawBody: true, // Enable raw body for Stripe webhooks
+  });
+
+  // Enable CORS for all origins in development
   app.enableCors({
-    origin: 'http://localhost:3000',
+    origin: true, // Allow all origins
     credentials: true,
   });
 
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
+      transform: true,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
     }),
-    
   );
-  app.enableCors();
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle(`${process.env.APP_NAME} API`)
@@ -30,8 +36,6 @@ async function bootstrap() {
     SwaggerModule.createDocument(app, swaggerConfig),
   );
 
-  await app.listen(process.env.PORT ?? 3333);
-
-  
+  await app.listen(3333);
 }
 bootstrap();

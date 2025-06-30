@@ -28,6 +28,8 @@ model User {
   phoneNumbers PhoneNumber[]
   addresses    UserAddress?
   RefreshToken RefreshToken[]
+  orders       Order[]
+  reviews      Review[]
 
   @@map("users")
 }
@@ -97,9 +99,11 @@ model Vendor {
   email        String @unique
   hash         String
   phone_number String
+  profilePicture String?
 
   addresses VendorAddress?
   products  Product[]
+  giftCards GiftCard[]
   RefreshToken RefreshToken[]
   
 
@@ -107,18 +111,24 @@ model Vendor {
   @@map("vendors")
 }
 
+enum AccountType {
+  user
+  vendor
+  admin
+}
+
 model RefreshToken {
-  id        Int      @id @default(autoincrement())
-  token     String   @unique
+  id        Int         @id @default(autoincrement())
+  token     String      @unique
   userId    Int?
   vendorId  Int?
-  user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  vendor    Vendor?   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
-  type      String    //user or vendor
+  user      User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vendor    Vendor?     @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  type      AccountType
   expiresAt DateTime
-  revoked   Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  revoked   Boolean     @default(false)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
 }
 
 model Category {
@@ -165,6 +175,88 @@ model Product {
   Vendor      Vendor        @relation(fields: [vendorid], references: [id], onDelete: Cascade)
   subcategory Subcategory[]
   Inventory   Inventory?
+  orderItems  OrderItem[]
+  reviews     Review[]
 
   @@index([id]) //indexing for optimized queries
+}
+
+model Order {
+  id              Int         @id @default(autoincrement())
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  userId          Int
+  status          String      @default("pending")
+  total           Float
+  paymentIntentId String?
+  items           OrderItem[]
+  user            User        @relation(fields: [userId], references: [id])
+  giftCardUsages  GiftCardUsage[]
+
+  @@map("Order")
+}
+
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  productId String
+  quantity  Int
+  price     Float
+  order     Order    @relation(fields: [orderId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
+
+  @@map("OrderItem")
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  rating    Int      // 1-5 stars
+  comment   String   @db.VarChar(1000)
+  userId    Int
+  productId String
+  
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, productId]) // One review per user per product
+  @@index([productId])
+  @@index([userId])
+  @@map("reviews")
+}
+
+model GiftCard {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  amount      Decimal  @db.Decimal(10, 2)
+  balance     Decimal  @db.Decimal(10, 2)
+  isActive    Boolean  @default(true)
+  expiresAt   DateTime?
+  vendorId    Int?     // Optional: null means admin-created, vendorId means vendor-created
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  vendor Vendor? @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  usages GiftCardUsage[]
+  
+  @@index([code])
+  @@index([vendorId])
+  @@map("gift_cards")
+}
+
+model GiftCardUsage {
+  id         Int      @id @default(autoincrement())
+  giftCardId String
+  orderId    Int
+  amountUsed Decimal  @db.Decimal(10, 2)
+  usedAt     DateTime @default(now())
+  
+  giftCard GiftCard @relation(fields: [giftCardId], references: [id], onDelete: Cascade)
+  order    Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  @@index([giftCardId])
+  @@index([orderId])
+  @@map("gift_card_usages")
 }

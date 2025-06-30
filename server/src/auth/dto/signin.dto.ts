@@ -8,8 +8,8 @@ export class SignInDto {
     @IsString()
     password: string;
 
-    @IsIn(['user', 'vendor'])
-    type: 'user' | 'vendor';
+    @IsIn(['user', 'vendor', 'admin'])
+    type: 'user' | 'vendor' | 'admin';
 
   }
   
